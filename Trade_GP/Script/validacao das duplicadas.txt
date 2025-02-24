@@ -1,0 +1,135 @@
+
+
+/*
+
+
+//cruzamento venda x dev
+SELECT sai.id_grupo,sai.id_planilha,sai.id_operacao,sai.dt_doc,sai.cfop,sai.nro_doc,sai.nro_item,sai.material,sai.denom,sai.unid,sai.quantidade_1,sai.valor,sai.icst_valor,sai.fest_valor,
+       dev.id_grupo,dev.id_planilha,dev.id_operacao,dev.dt_lanc,dev.cfop,dev.doc_origem,dev.item_ref,dev.material,dev.denom,dev.unid,dev.quantidade_1,dev.valor,dev.icst_valor,dev.fest_valor,dev.doc_origem,dev.item_ref 
+FROM   nfe_det_trade dev 
+inner join nfe_det_trade sai  ON  sai.id_operacao = 'S'  and sai.nro_doc = dev.doc_origem and sai.nro_item = dev.item_ref 
+where  dev.id_operacao = 'Z' 
+order by sai.dt_doc,sai.nro_item
+go
+
+
+//Select para processamento da devolução
+SELECT     sai.id_grupo,sai.id_planilha,sai.id_operacao,sai.dt_doc,sai.cfop,sai.nro_doc,sai.nro_item,sai.material,sai.denom,sai.unid,sai.quantidade_1,sai.valor,sai.icst_valor,sai.fest_valor,
+           dev.cod_emp,dev.local,dev.id_grupo,dev.id_planilha,dev.id_operacao,dev.dt_lanc,dev.cfop,dev.doc_origem,dev.item_ref,dev.material,dev.denom,dev.unid,dev.quantidade_1,dev.valor,dev.icst_valor,dev.fest_valor
+FROM       nfe_det_trade dev 
+inner join nfe_det_trade sai  ON  sai.id_grupo = 1 and sai.cod_emp = '1001' and sai.local = '0003' and sai.id_operacao = 'S' and to_char(sai.dt_doc,'MM/YYYY') = '01/2017' and sai.nro_doc = dev.doc_origem and sai.nro_item = dev.item_ref 
+where      dev.id_operacao = 'Z' 
+order by   sai.dt_doc,sai.nro_item
+go
+
+--'1001','0003','02/2017'
+
+select * from nfe_det_trade where nro_doc = '8624520740'
+SELECT sai.id_operacao,sai.dt_doc,sai.cfop,sai.nro_doc,sai.nro_item,sai.material,sai.denom,sai.unid,sai.quantidade_1,sai.valor,sai.icst_valor,sai.fest_valor,
+       dev.id_operacao,dev.dt_lanc,dev.cfop,dev.doc_origem,dev.item_ref,dev.material,dev.denom,dev.unid,sai.quantidade_1,dev.valor,dev.icst_valor,dev.fest_valor
+FROM   nfe_det_trade dev 
+inner join nfe_det_trade sai  ON  sai.id_operacao = 'S'  and sai.nro_doc = dev.doc_origem and sai.nro_item = dev.item_ref 
+where  dev.id_operacao = 'Z' 
+order by sai.dt_doc,sai.nro_item
+go
+
+
+SELECT * FROM nfe_cab_trade
+
+SELECT case 
+         when nfe.layout = 'S' then 'SAP'
+         ELSE                       'SIC'
+       end as sistema,nfe.*
+FROM nfe_det_trade nfe
+where nfe.cod_emp = '1004' and nfe.local = '0010' and id_operacao = 'S' and to_char(dt_doc,'MM-YYYY') = '02-2017' 
+order by nfe.cod_emp,nfe.local,
+         case 
+         when nfe.layout = 'S' then 'SAP'
+         else                       'SIC'
+         end,
+         nfe.chave_acesso,nfe.nro_item
+
+select * from nfe_cab_trade where id = 17
+
+//notas duplicatdas saidas
+select chave_acesso,nro_item,count(*) as contador
+from   nfe_det_trade
+where  id_operacao = 'S'
+group by  chave_acesso,nro_item
+
+
+CREATE TABLE duplicados  AS  
+        select chave_acesso,nro_item,count(*) as contador
+        from nfe_det_trade
+        where id_operacao = 'S'
+        group by  chave_acesso,nro_item
+
+--DROP TABLE duplicados
+
+SELECT * FROM DUPLICADOS
+
+select * from nfe_det_trade where chave_acesso ='26170216622166000260550010004795461005430083' and nro_item = '10'
+
+//notas duplicatdas entrada
+select chave_acesso,nro_item,count(*) as contador
+from nfe_det_trade
+where id_operacao = 'E'
+group by  chave_acesso,nro_item
+
+
+update nfe_det_trade set id_operacao = 'Z'  where id_operacao = 'z'
+
+
+
+select * 
+from   public.nfe_det_trade
+where chave_acesso = '26170216622166000260550010004795921005350082' AND nro_item = '10'
+
+
+SELECT public.nfe_det_trade
+*/
+
+SELECT chave_acesso,material,LEFT(cfop,4),quantidade_1,count(*) as contador
+FROM   nfe_det_trade
+where cod_emp = '1004' and local = '0002'  AND LEFT(CFOP,4) = '5405' and to_char(dt_doc,'MM-YYYY') = '02-2017'
+GROUP BY chave_acesso,material,LEFT(cfop,4),quantidade_1
+
+
+SELECT 
+    cod_emp, 
+    local, 
+    cfop,
+    --SUM(quantidade_1) AS total_quantidade,
+    SUM(preco_liq) AS total_preco_liq,
+    SUM(liquido) AS total_liquido,
+    SUM(valor) AS total_valor,
+    SUM(vlr_contb) AS total_vlr_contb,
+    SUM(pis_base) AS total_pis_base,
+    --SUM(stpis) AS total_stpis,
+    SUM(pis_taxa) AS total_pis_taxa,
+    SUM(pis_vlr) AS total_pis_vlr,
+    --SUM(stcof) AS total_stcof,
+    SUM(cof_base) AS total_cof_base,
+    SUM(cof_taxa) AS total_cof_taxa,
+    SUM(cof_vlr) AS total_cof_vlr,
+    SUM(ipi_base) AS total_ipi_base,
+    --SUM(ipi_taxa) AS total_ipi_taxa,
+    SUM(ipi_vlr) AS total_ipi_vlr,
+    SUM(icms_base) AS total_icms_base,
+    SUM(icms_taxa) AS total_icms_taxa,
+    SUM(icms_vlr) AS total_icms_vlr,
+    SUM(fecp_vlr) AS total_fecp_vlr,
+    SUM(icst_base) AS total_icst_base,
+    --SUM(icst_taxa) AS total_icst_taxa,
+    SUM(icst_valor) AS total_icst_valor,
+    SUM(fest_valor) AS total_fest_valor,
+    SUM(bc_icms_rt) AS total_bc_icms_rt,
+    SUM(vlr_icms_str) AS total_vlr_icms_str,
+    SUM(vlr_fcps_st_rt) AS total_vlr_fcps_st_rt
+FROM 
+    nfe_det_trade
+where
+    COD_EMP = '1003'
+GROUP BY 
+    cod_emp, local, cfop;
+

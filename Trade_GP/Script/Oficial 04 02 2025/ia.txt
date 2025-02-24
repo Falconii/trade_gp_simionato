@@ -1,0 +1,333 @@
+﻿DROP FUNCTION IF EXISTS public.calculo_saldov2(integer, text, text, text, integer);
+CREATE OR REPLACE FUNCTION public.calculo_saldov2(
+    _id_grupo integer,
+    _cod_emp text,
+    _local text,
+    _mes_ano text,
+    _id_fechamento integer,
+    OUT _saida integer
+) RETURNS integer
+LANGUAGE 'plpgsql'
+AS $$
+DECLARE
+    _Prazo int4;
+    _Fim_Val int4;
+    _Etapa int4;
+    _saldo_f numeric(15,4);
+BEGIN
+    _saida := 0;
+    -- Atualização direta sem loop
+    WITH cte_dados AS (
+        SELECT
+            det.id_grupo,
+            det.id_planilha,
+            det.nro_linha,
+            det.id_operacao,
+            det.cod_emp,
+            det.local,
+            det.material,
+            det.dt_ref,
+            det.saldo,
+            det.quantidade_1,
+            det.id_saida,
+            det.nro_linha_saida,
+            det.qtd_convertida,
+            coalesce(depara.para_material, '') AS alternativo,
+            res.validade AS validade
+        FROM nfe_det_trade det
+        INNER JOIN RESUMO_5405 res 
+            ON res.id_grupo = det.id_grupo 
+            AND res.cod_emp = det.cod_emp 
+            AND res.local = det.local 
+            AND res.material = det.material
+        LEFT JOIN de_para depara 
+            ON depara.id_grupo = det.id_grupo 
+            AND depara.cod_emp = det.cod_emp 
+            AND depara.local = det.local 
+            AND depara.de_material = det.material
+        WHERE det.id_grupo = _id_grupo
+            AND det.cod_emp = _cod_emp
+            AND det.local = _local
+            AND det.status = '0'
+            AND det.id_operacao IN ('S', 'Z')
+            AND det.dt_ref BETWEEN TO_DATE(_mes_ano, 'MM/YYYY') AND (TO_DATE(_mes_ano, 'MM/YYYY') + INTERVAL '1 MONTH' - INTERVAL '1 DAY')
+    ),
+    cte_saldos AS (
+        SELECT 
+            id_grupo,
+            id_planilha,
+            nro_linha,
+            id_operacao,
+            cod_emp,
+            local,
+            material,
+            dt_ref,
+            saldo,
+            validade,
+            CASE 
+                WHEN validade > 60 THEN 60
+                ELSE validade
+            END AS _Prazo1,
+            CASE 
+                WHEN validade > 120 THEN 120
+                ELSE validade
+            END AS _Prazo2
+        FROM cte_dados
+    )
+    UPDATE nfe_det_trade AS det
+    SET 
+        status = '1',
+        etapa = CASE 
+            WHEN det.validade > 60  THEN 1
+            WHEN det.validade > 120 THEN 2
+            ELSE 3 
+        END,
+        saldo = CASE 
+            WHEN det.id_operacao = 'Z' THEN seek_saida_2(det.id_grupo, det.cod_emp, det.local, det.id_planilha, det.nro_linha, det.material, det.qtd_convertida, det.dt_ref, det.id_saida, det.nro_linha_saida, _id_fechamento)
+            WHEN det.id_operacao = 'S' THEN 
+                COALESCE(
+                    seek_in_2V1(det.id_grupo, det.id_planilha, det.nro_linha, det.cod_emp, det.local, det.material, det.dt_ref, det.saldo, id_fechamento, Prazo1),
+                    seek_in_2V1(det.id_grupo, det.id_planilha, det.nro_linha, det.cod_emp, det.local, det.alternativo, det.dt_ref, det.saldo, id_fechamento, Prazo1),
+                    seek_in_2V1(det.id_grupo, det.id_planilha, det.nro_linha, det.cod_emp, det.local, det.material, det.dt_ref, det.saldo, id_fechamento, Prazo2),
+                    seek_in_2V1(det.id_grupo, det.id_planilha, det.nro_linha, det.cod_emp, det.local, det.alternativo, det.dt_ref, det.saldo, id_fechamento, Prazo2),
+                    seek_in_2V1(det.id_grupo, det.id_planilha, det.nro_linha, det.cod_emp, det.local, det.material, det.dt_ref, det.saldo, _id_fechamento, det.validade),
+                    seek_in_2V1(det.id_grupo, det.id_planilha, det.nro_linha, det.cod_emp, det.local, det.alternativo, det.dt_ref, det.saldo, _id_fechamento, det.validade)
+                )
+        END
+    FROM cte_saldos AS det
+    WHERE nfe_det_trade.id_grupo = det.id_grupo
+        AND nfe_det_trade.id_planilha = det.id_planilha
+        AND nfe_det_trade.nro_linha = det.nro_linha;
+
+    -- Conta quantas linhas foram alteradas
+    GET DIAGNOSTICS _saida = ROW_COUNT;
+
+END;
+$$;
+goCREATE OR REPLACE FUNCTION public.seek_in_2v1(
+    _id_grupo int4,
+    _id_s int4,
+    _nro_linha_s int4,
+    _cod_empresa text,
+    _local text,
+    _material text,
+    _data date,
+    _saldo_s numeric(15,4),
+    _id_fechamento int4,
+    _validade int4,
+    OUT _saldo_f numeric(15,4)
+) RETURNS numeric(15,4)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    _last date;
+    _qtd numeric(15,4);
+    _saldo_temp numeric(15,4);
+BEGIN
+    _saldo_f := saldo_s;
+    _last := data - (_validade * interval '1 day');
+
+    -- Atualiza os saldos diretamente sem loop
+    WITH entradas AS (
+        SELECT id_grupo, id_planilha, nro_linha, dt_ref, id_operacao, saldo
+        FROM nfe_det_trade
+        WHERE id_grupo = _id_grupo
+            AND cod_emp = _cod_empresa
+            AND local = _local
+            AND material = _material
+            AND id_operacao = 'E'
+            AND saldo > 0
+            AND dt_ref BETWEEN last AND data
+        ORDER BY dt_ref, id_operacao
+    ),
+    processado AS (
+        SELECT id_grupo, id_planilha, nro_linha, saldo, 
+               LEAST(saldo, _saldo_f) AS qtd_atualizada
+        FROM entradas
+        WHERE _saldo_f > 0
+    )
+    UPDATE nfe_det_trade ent
+    SET saldo = GREATEST(0, ent.saldo - processado._qtd_atualizada)
+    FROM processado
+    WHERE ent.id_grupo = processado.id_grupo
+        AND ent.id_planilha = processado.id_planilha
+        AND ent.nro_linha = processado.nro_linha
+    RETURNING SUM(processado._qtd_atualizada) INTO _qtd;
+
+    -- Inserção única no controle_e
+    INSERT INTO controle_e(id_grupo, id_fechamento, id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e)
+    SELECT id_grupo, id_fechamento, id_s, nro_linha_s, id_planilha, nro_linha, _saldo_f, qtd
+    FROM processado
+    WHERE _saldo_f > 0;
+
+    -- Atualiza saldo final
+    _saldo_f := _saldo_f - _qtd;
+
+    RETURN;
+END;
+$$;
+
+
+//funcionando
+CREATE OR REPLACE FUNCTION atualizar_saldo( _id_grupo integer,
+	        _cod_emp text,
+	        _local text,
+	        _mes_ano text,
+	        _id_fechamento integer,
+	        OUT _saida integer) 
+RETURNS INTEGER 
+COST 100
+VOLATILE PARALLEL UNSAFE
+AS $$
+DECLARE
+    record RECORD;
+    _qtd numeric(15,4);
+    __saldo_f     numeric(15,4);
+    _Prazo int4;
+    _Fim_Val int4;
+    _Etapa int4;
+    cursor_dados CURSOR FOR
+        WITH cte_dados AS (
+            SELECT
+                det.id_grupo,
+                det.id_planilha,
+                det.nro_linha,
+                det.id_operacao,
+                det.cod_emp,
+                det.local,
+                det.material,
+                det.dt_ref,
+                det.saldo,
+                det.quantidade_1,
+                det.id_saida,
+                det.nro_linha_saida,
+                det.qtd_convertida,
+                coalesce(depara.para_material, '') AS alternativo,
+                res.validade AS validade
+            FROM nfe_det_trade det
+            INNER JOIN RESUMO_5405 res 
+                ON res.id_grupo = det.id_grupo 
+                AND res.cod_emp = det.cod_emp 
+                AND res.local = det.local 
+                AND res.material = det.material
+            LEFT JOIN de_para depara 
+                ON depara.id_grupo = det.id_grupo 
+                AND depara.cod_emp = det.cod_emp 
+                AND depara.local = det.local 
+                AND depara.de_material = det.material
+            WHERE det.id_grupo = _id_grupo
+                AND det.cod_emp = _cod_emp
+                AND det.local = _local
+                AND det.status = '0'
+                AND det.id_operacao IN ('S', 'Z')
+                AND TO_CHAR(det.dt_ref,'DD/MM/YYYY') = _mes_ano
+        )
+        SELECT * FROM cte_dados;
+BEGIN
+    _qtd := 0;
+    _saida := 0;
+    
+    -- Abrindo o cursor
+    OPEN cursor_dados;
+
+    -- Iterando sobre os resultados da CTE usando o cursor
+    LOOP
+        FETCH cursor_dados INTO record;
+        EXIT WHEN NOT FOUND;
+
+          RAISE NOTICE 'RECORD  ';
+          
+          IF ((record.id_operacao = 'Z')) then
+        
+               select _saldo_f from seek_saida_2(record.id_grupo,record.cod_emp,record.local,record.id_planilha,record.nro_linha,record.material,record.qtd_convertida,record.dt_ref,record.id_saida,record.nro_linha_saida,_id_fechamento) into __saldo_f ;
+              
+               update nfe_det_trade set status = '1' where id_grupo = record.id_grupo and id_planilha = record.id_planilha and nro_linha = record.nro_linha;
+    
+           else 
+    
+               if (record.id_operacao = 'S') then
+    
+                  //RAISE NOTICE 'record.material % record.dt_ref % record.saldo % record.validade ',record.material , record.dt_ref , record.saldo, record.validade;
+              
+                  _Prazo    := 0;
+                  _Fim_Val  := 0;
+                  _Etapa    := 1;
+    
+                  //Etapa 1 
+                  if record.validade > 60 then
+                     _Prazo := 60;
+                  else
+                     _Prazo := record.validade;
+                     _Fim_val := 1;
+                  end if;
+    
+                  select _saldo_f from seek_in_2V1(record.id_grupo,record.id_planilha,record.nro_linha,record.cod_emp,record.local,record.material,record.dt_ref,record.saldo,_id_fechamento,_Prazo) into __saldo_f ;
+    
+                  if (__saldo_f > 0  and record.alternativo <> '') then 
+              
+                     select _saldo_f from seek_in_2V1(record.id_grupo,record.id_planilha,record.nro_linha,record.cod_emp,record.local,record.alternativo,record.dt_ref,__saldo_f,_id_fechamento,_Prazo) into __saldo_f ;
+    
+                  end if;
+    
+                  //Etapa 2
+                  if (__saldo_f > 0 and _Fim_Val = 0) then 
+                      _Etapa := 2;
+                      if record.validade > 120 then
+                         _Prazo := 120;
+                      else
+                         _Prazo := record.validade;
+                         _Fim_val := 1;
+                      end if;
+    
+                      select _saldo_f from seek_in_2V1(record.id_grupo,record.id_planilha,record.nro_linha,record.cod_emp,record.local,record.material,record.dt_ref,record.saldo,_id_fechamento,_Prazo) into __saldo_f ;
+    
+                      if (__saldo_f > 0  and record.alternativo <> '') then 
+              
+                         select _saldo_f from seek_in_2V1(record.id_grupo,record.id_planilha,record.nro_linha,record.cod_emp,record.local,record.alternativo,record.dt_ref,__saldo_f,_id_fechamento,_Prazo) into __saldo_f ;
+    
+                      end if;
+    
+                  end if;
+    
+                  //Etapa 3
+                  if (__saldo_f > 0 and _Fim_Val = 0) then 
+    
+                      _Etapa := 3;
+    
+                      _Prazo := record.validade;
+    
+                      select _saldo_f from seek_in_2V1(record.id_grupo,record.id_planilha,record.nro_linha,record.cod_emp,record.local,record.material,record.dt_ref,record.saldo,_id_fechamento,_Prazo) into __saldo_f ;
+    
+                      if (__saldo_f > 0  and record.alternativo <> '') then 
+              
+                         select _saldo_f from seek_in_2V1(record.id_grupo,record.id_planilha,record.nro_linha,record.cod_emp,record.local,record.alternativo,record.dt_ref,__saldo_f,_id_fechamento,_Prazo) into __saldo_f ;
+    
+                      end if;
+    
+                  end if;
+    
+                  update nfe_det_trade set saldo = __saldo_f , status = '1', etapa = _etapa where id_grupo = record.id_grupo and id_planilha = record.id_planilha and nro_linha = record.nro_linha;
+     
+               end if;
+           
+           end if;
+    
+           _saida := _saida + 1;
+
+    END LOOP;
+
+    -- Fechando o cursor
+    CLOSE cursor_dados;
+END;
+$$ LANGUAGE plpgsql;
+
+go
+select * from atualizar_saldo(1,'1002','0011','22/04/2017',1)
+go
+
+/*
+select dt_ref,count(*) dt_ref 
+from nfe_det_trade 
+where local = '0011' and id_operacao = 'S' and status = '0' and to_char(dt_ref,'MM/YYYY') = '04/2017'
+group by dt_ref
+*/

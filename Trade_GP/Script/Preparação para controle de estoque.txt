@@ -1,0 +1,89 @@
+﻿Piloto do calculo do controle de estoque
+
+Fonte de Dados: Ano 2017
+
+Janeiro: Somente Entradas.
+Fevereiro a Junho : Entradas E Saídas.
+
+Funções e Triggers para instalação:
+
+- calculo_saldo.sql
+- seek nota entrada 2.sql
+- trigger_controle_nfe.sql
+
+Depois da Importação e implantação das funcões, usar o seguinte comando para o cáculo:
+
+select * from calculo_saldo(1,'1004','0002','2017-02-01','2017-02-28',1)
+
+Não esquecer que esta funcão processa apenas 1000 registros.
+Por isso devemos contar quantos registros com id_operacao = 'S' temos no periodo. Dividir por 1000 + 1.
+Depois repetimos o comando N vezes.
+
+//Select para cruzar as saidas com as entradas
+select   ven.id_grupo
+        ,ven.id_planilha
+        ,ven.id_operacao
+        ,ven.nro_linha
+        ,ven.cod_emp
+        ,ven.local
+        ,ven.id_planilha
+        ,ven.dt_doc
+        ,ven.dt_lanc
+        ,ven.nro_doc
+        ,ven.nro_item
+        ,ven.material
+        ,ven.denom
+        ,ven.quantidade_1 
+        ,ven.unid
+        ,ven.cfop
+        ,ven.saldo
+        ,ven.pis_base
+        ,ven.pis_vlr
+        ,ven.cof_base
+        ,ven.cof_vlr
+        ,'==>'      as entradas
+        ,ent.quantidade_1   as qtd_entrada
+        ,con.qtd_e  as qtd_usada
+        ,ent.pis_base
+        ,ent.pis_vlr
+        ,ent.cof_base
+        ,ent.cof_vlr
+        ,ent.icst_valor
+        ,ent.fest_valor
+        ,ent.saldo
+        ,ent.id_grupo
+        ,ent.id_planilha
+        ,ent.id_operacao
+        ,ent.nro_linha
+        ,ent.cod_emp
+        ,ent.local
+        ,ent.id_planilha
+        ,ent.dt_doc
+        ,ent.dt_lanc
+        ,ent.nro_doc
+        ,ent.nro_item
+        ,ent.material
+        ,ent.denom
+        ,ent.cod_controle
+        ,ent.unid
+        ,ent.cfop
+from     controle_e con 
+inner join nfe_det_trade ent on ent.id_planilha  = con.id_e and ent.nro_linha = con.nro_linha_e 
+inner join nfe_det_trade ven on ven.id_planilha = con.id_s and ven.nro_linha = con.nro_linha_s 
+inner join clientes cli on cli.cod_empresa = ven.cod_emp and cli.local = ven.local 
+--inner join fechamento fec on fec.id_grupo = con.id_grupo and fec.id = con.id_fechamento   
+where  VEN.ID_GRUPO = 1  and  con.id_fechamento = 1  and  VEN.STATUS = '1'  and   VEN.ID_OPERACAO = 'S'  
+order by ven.cod_emp,ven.local,ven.nro_doc,ven.nro_item  
+go
+
+Para cancelar o processamento basta deletar a tabela controle_e.
+
+
+Comando para zerar as tabelas sem apagar as triggers;
+
+TRUNCATE TABLE nfe_cab_trade RESTART IDENTITY;
+go
+TRUNCATE TABLE nfe_det_trade; 
+go
+TRUNCATE TABLE controle_e; 
+go

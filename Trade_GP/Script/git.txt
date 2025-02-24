@@ -1,0 +1,7 @@
+﻿echo "# Simonato_Trade_GP" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Falconii/Simonato_Trade_GP.git
+git push -u origin main

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33027.164
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trade_GP Versao 02", "Trade_GP\Trade_GP Versao 02.csproj", "{73756B04-9E3C-4B77-83C8-A766856FE5F9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73756B04-9E3C-4B77-83C8-A766856FE5F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73756B04-9E3C-4B77-83C8-A766856FE5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73756B04-9E3C-4B77-83C8-A766856FE5F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73756B04-9E3C-4B77-83C8-A766856FE5F9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {86D006B8-F087-4F2E-BEC4-BB6F619FA675}
+	EndGlobalSection
+EndGlobal

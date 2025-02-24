@@ -1,0 +1,58 @@
+﻿CREATE OR REPLACE FUNCTION public.teste(
+    _id_grupo integer,
+    _cod_emp text,
+    _local text,
+    _mes_ano text,
+    _id_fechamento integer,
+    OUT _saida integer
+) RETURNS integer
+LANGUAGE 'plpgsql'
+AS $$
+DECLARE
+    _Prazo int4;
+    _Fim_Val int4;
+    _Etapa int4;
+    _saldo_f numeric(15,4);
+BEGIN
+    _saida := 0;
+
+    -- Atualização direta sem loop
+  WITH cte_dados AS (
+        SELECT
+            det.id_grupo,
+            det.id_planilha,
+            det.nro_linha,
+            det.id_operacao,
+            det.cod_emp,
+            det.local,
+            det.material,
+            det.dt_ref,
+            det.saldo,
+            det.quantidade_1,
+            det.id_saida,
+            det.nro_linha_saida,
+            det.qtd_convertida,
+            coalesce(depara.para_material, '') AS alternativo,
+            res.validade AS validade
+        FROM nfe_det_trade det
+        INNER JOIN RESUMO_5405 res 
+            ON res.id_grupo = det.id_grupo 
+            AND res.cod_emp = det.cod_emp 
+            AND res.local = det.local 
+            AND res.material = det.material
+        LEFT JOIN de_para depara 
+            ON depara.id_grupo = det.id_grupo 
+            AND depara.cod_emp = det.cod_emp 
+            AND depara.local = det.local 
+            AND depara.de_material = det.material
+        WHERE det.id_grupo = _id_grupo
+            AND det.cod_emp = '1002'
+            AND det.local = '0011'
+            AND det.status = '0'
+            AND det.id_operacao IN ('S', 'Z')
+            AND det.dt_ref = '2017-04-03'
+    );
+    GET DIAGNOSTICS _saida = 100;
+
+END;
+$$;

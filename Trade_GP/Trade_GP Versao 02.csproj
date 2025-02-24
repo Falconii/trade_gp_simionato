@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{73756B04-9E3C-4B77-83C8-A766856FE5F9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Trade_GP</RootNamespace>
+    <AssemblyName>Trade_GP</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Correios, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Correios-Api.1.1.1\lib\portable-net45+win\Correios.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.6.0\lib\net35\ExcelDataReader.DataSet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.8.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.8.0.0\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1001\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=8.0.3.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.8.0.3\lib\netstandard2.0\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.8.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.0\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.8.0.0\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.8.0.0\lib\net462\System.Threading.Channels.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Dao\postgre\daoContDetProc.cs" />
+    <Compile Include="Dao\postgre\daoContCabProc.cs" />
+    <Compile Include="Dao\postgre\daoCliente.cs" />
+    <Compile Include="Dao\postgre\daoFechamento.cs" />
+    <Compile Include="Dao\postgre\daoNfeCabTrade.cs" />
+    <Compile Include="Dao\postgre\daoNfeDetTrade.cs" />
+    <Compile Include="Dao\postgre\daoResumo5405.cs" />
+    <Compile Include="Dao\postgre\daoSaldo.cs" />
+    <Compile Include="Dao\postgre\daoSelic.cs" />
+    <Compile Include="Dao\postgre\daoUsuario.cs" />
+    <Compile Include="DataBase\RunCommand.cs" />
+    <Compile Include="Extensoes\IntExtension.cs" />
+    <Compile Include="Extensoes\LongExtension.cs" />
+    <Compile Include="Extensoes\StringExtension.cs" />
+    <Compile Include="FormImplantacaoSaldo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormImplantacaoSaldo.Designer.cs">
+      <DependentUpon>FormImplantacaoSaldo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRelatorioAnalitico.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRelatorioAnalitico.Designer.cs">
+      <DependentUpon>FormRelatorioAnalitico.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSaldosLote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSaldosLote.Designer.cs">
+      <DependentUpon>FormSaldosLote.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormVlrEconomicoLote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormVlrEconomicoLote.Designer.cs">
+      <DependentUpon>FormVlrEconomicoLote.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAtualizaSelic.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAtualizaSelic.Designer.cs">
+      <DependentUpon>FormAtualizaSelic.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAviso.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAviso.Designer.cs">
+      <DependentUpon>FormAviso.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCalculo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCalculo.Designer.cs">
+      <DependentUpon>FormCalculo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCliente.Designer.cs">
+      <DependentUpon>FormCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormFechamento.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormFechamento.Designer.cs">
+      <DependentUpon>FormFechamento.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormImportacao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormImportacao.Designer.cs">
+      <DependentUpon>FormImportacao.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLogin.Designer.cs">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormParametros.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormParametros.Designer.cs">
+      <DependentUpon>FormParametros.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPrincipal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPrincipal.Designer.cs">
+      <DependentUpon>FormPrincipal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormProcessamento.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormProcessamento.Designer.cs">
+      <DependentUpon>FormProcessamento.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSaldos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSaldos.Designer.cs">
+      <DependentUpon>FormSaldos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSelic.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSelic.Designer.cs">
+      <DependentUpon>FormSelic.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormUsuario.Designer.cs">
+      <DependentUpon>FormUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormValidacoes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormValidacoes.Designer.cs">
+      <DependentUpon>FormValidacoes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormVlrEconomico.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormVlrEconomico.Designer.cs">
+      <DependentUpon>FormVlrEconomico.cs</DependentUpon>
+    </Compile>
+    <Compile Include="manutencao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="manutencao.Designer.cs">
+      <DependentUpon>manutencao.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MDISingleton.cs" />
+    <Compile Include="Models\AssinaturaModel.cs" />
+    <Compile Include="Models\Cliente.cs" />
+    <Compile Include="Models\ClienteByEmpLocal.cs" />
+    <Compile Include="Models\ContadorModel.cs" />
+    <Compile Include="Models\Estado.cs" />
+    <Compile Include="Models\ContDetProc.cs" />
+    <Compile Include="Models\ContCabProc.cs" />
+    <Compile Include="Models\Fechamento.cs" />
+    <Compile Include="Models\LayOutModel.cs" />
+    <Compile Include="Models\LayOutModelV100.cs" />
+    <Compile Include="Models\NfeCabTrade.cs" />
+    <Compile Include="Models\NfeDetTrade.cs" />
+    <Compile Include="Models\Nfe_CabE_Qry_01.cs" />
+    <Compile Include="Models\Nfe_DetE_Qry_00 .cs" />
+    <Compile Include="Models\Nfe_DetE_Qry_01.cs" />
+    <Compile Include="Models\ProgressReportModel.cs" />
+    <Compile Include="Models\Resumo_5405_01.cs" />
+    <Compile Include="Models\Resumo_5405.cs" />
+    <Compile Include="Models\Saldo.cs" />
+    <Compile Include="Models\Selic.cs" />
+    <Compile Include="Models\Usuario.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ApoioLayOut.cs" />
+    <Compile Include="Util\Coluna_Copy.cs" />
+    <Compile Include="Util\ConexaoDb.cs" />
+    <Compile Include="Util\ErrosImportacao.cs" />
+    <Compile Include="Util\ExceptionErroImportacao.cs" />
+    <Compile Include="Util\FiltroNfDetE.cs" />
+    <Compile Include="Util\FiltroVencimento.cs" />
+    <Compile Include="Util\Filtro_Fechamento.cs" />
+    <Compile Include="Util\Filtro_NfeCabE.cs" />
+    <Compile Include="Util\Filtro_Nfe_Det_00.cs" />
+    <Compile Include="Util\Filtro_Nfe_Det_01.cs" />
+    <Compile Include="Util\GridLocais.cs" />
+    <Compile Include="Util\ImportacaoAsync.cs" />
+    <Compile Include="Util\LayOutIndex.cs" />
+    <Compile Include="Util\LayOutPadrao.cs" />
+    <Compile Include="Util\ParamLocal.cs" />
+    <Compile Include="Util\Periodo.cs" />
+    <Compile Include="Util\UsuarioSistema.cs" />
+    <Compile Include="Util\Validacoes.cs" />
+    <EmbeddedResource Include="FormImplantacaoSaldo.resx">
+      <DependentUpon>FormImplantacaoSaldo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRelatorioAnalitico.resx">
+      <DependentUpon>FormRelatorioAnalitico.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSaldosLote.resx">
+      <DependentUpon>FormSaldosLote.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormVlrEconomicoLote.resx">
+      <DependentUpon>FormVlrEconomicoLote.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAtualizaSelic.resx">
+      <DependentUpon>FormAtualizaSelic.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAviso.resx">
+      <DependentUpon>FormAviso.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCalculo.resx">
+      <DependentUpon>FormCalculo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCliente.resx">
+      <DependentUpon>FormCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormFechamento.resx">
+      <DependentUpon>FormFechamento.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormImportacao.resx">
+      <DependentUpon>FormImportacao.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLogin.resx">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormParametros.resx">
+      <DependentUpon>FormParametros.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPrincipal.resx">
+      <DependentUpon>FormPrincipal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSaldos.resx">
+      <DependentUpon>FormSaldos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSelic.resx">
+      <DependentUpon>FormSelic.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormUsuario.resx">
+      <DependentUpon>FormUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormValidacoes.resx">
+      <DependentUpon>FormValidacoes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormVlrEconomico.resx">
+      <DependentUpon>FormVlrEconomico.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="manutencao.resx">
+      <DependentUpon>manutencao.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Script\Apoio2\Acumulado CFOP.sql" />
+    <Content Include="Script\Apoio2\Adaptação Novo Calculo.sql" />
+    <Content Include="Script\Apoio2\gerar acumulado.sql" />
+    <Content Include="Script\Apoio2\implantacao de saldo 1004 0001.sql" />
+    <Content Include="Script\Apoio2\relatorio saida x ent x vlr economico.sql" />
+    <Content Include="Script\Apoio2\Triggers e Funcoes Oficial.sql" />
+    <Content Include="Script\Apoio\gerar acumulado.sql" />
+    <Content Include="Script\Apoio\implantacao de saldo 1004 0001.sql" />
+    <Content Include="Script\etapa_extenso.sql" />
+    <Content Include="Script\Oficial 04 02 2025\aprendendo.txt" />
+    <Content Include="Script\Oficial 04 02 2025\ia.txt" />
+    <Content Include="Script\reavaliar\calculo_saldov2.sql" />
+    <Content Include="Script\reavaliar\nova devolucao.sql" />
+    <Content Include="Script\Apoio\relatorio saida x ent x vlr economico.sql" />
+    <Content Include="Script\reavaliar\valor economico por lote e devolução nao usar.sql" />
+    <Content Include="Script\reavaliar\vlr econimico devolucao.sql" />
+    <Content Include="Script\reavaliar\vlr_enconomico_v2.sql" />
+    <Content Include="Script\Cálculo\VALOR ECONOMICO.txt" />
+    <Content Include="Script\Apoio\Triggers e Funcoes Oficial.sql" />
+    <Content Include="Script\vlr_enconomico_v2.sql" />
+    <None Include="Resources\excel-logo.png" />
+    <Content Include="Script\Apoio\Acumulado CFOP.sql" />
+    <Content Include="Script\Banco\Banco De Dados.sql" />
+    <Content Include="Script\Lixo\busca saida devolucao.sql" />
+    <Content Include="Script\Old\calculo_saldo.sql" />
+    <Content Include="Script\Old\funcao check_devolucao.sql" />
+    <Content Include="Script\git.txt" />
+    <Content Include="Script\Old\seek dev saida.sql" />
+    <Content Include="Script\Old\seek nota entrada 2.sql" />
+    <Content Include="Script\Lixo\seek nota entrada.sql" />
+    <Content Include="Script\Old\seek nota saida 2.sql" />
+    <Content Include="Script\Banco\tabelas.sql" />
+    <Content Include="Script\Old\trigger_controle_nfe.SQL" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 e x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,87 @@
+DROP TYPE IF EXISTS Sai_Dev;
+CREATE TYPE Sai_Dev AS 
+(
+sai_id_grupo     int4,
+sai_id_planilha  int4,
+sai_nro_linha    int4,
+sai_id_operacao  text,
+sai_dt_doc       text,
+sai_cfop         text,
+sai_nro_doc      text,
+sai_nro_item     text,
+sai_material     text,
+sai_denom        text,
+sai_unid         text,
+sai_quantidade_1 numeric(15,4),
+sai_valor        numeric(15,4),
+sai_icst_valor   numeric(15,2),
+sai_fest_valor   numeric(15,2),
+dev_id_grupo     int4,
+dev_id_planilha  int4,
+dev_nro_linha    int4,
+dev_id_operacao  text,
+dev_dt_doc       text,
+dev_cfop         text,
+dev_nro_doc      text,
+dev_nro_item     text,
+dev_material     text,
+dev_denom        text,
+dev_unid         text,
+dev_quantidade_1 numeric(15,4),
+dev_valor        numeric(15,4),
+dev_icst_valor   numeric(15,2),
+dev_fest_valor   numeric(15,2)
+);
+
+CREATE OR REPLACE FUNCTION "public"."check_devolucao" (
+                           in _grupo int4, in _empresa text , in _local text , in _mes_ano text  , out _saida text)  
+AS
+$$
+DECLARE
+
+ sai_dev public.Sai_Dev%ROWTYPE;
+
+ Comentarios boolean;  
+
+
+BEGIN
+
+        Comentarios = true;
+ 
+        //RAISE NOTICE  'Gravação de saldos % % % % % ' ,  _empresa  , _filial  ,  _cdcc , _ano   , _mes   ;
+       
+        FOR sai_dev in SELECT   sai.id_grupo,sai.id_planilha,sai.nro_linha,sai.id_operacao,sai.dt_doc,sai.cfop,sai.nro_doc,sai.nro_item,sai.material,sai.denom,sai.unid,sai.quantidade_1,sai.valor,sai.icst_valor,sai.fest_valor,
+                                dev.id_grupo,dev.id_planilha,dev.nro_linha,dev.id_operacao,dev.dt_lanc,dev.cfop,dev.doc_origem,dev.item_ref,dev.material,dev.denom,dev.unid,dev.quantidade_1,dev.valor,dev.icst_valor,dev.fest_valor
+                              FROM       nfe_det_trade dev 
+                              left join nfe_det_trade sai  ON  sai.id_grupo = _grupo and sai.cod_emp = _empresa  and sai.local = _local and sai.id_operacao = 'S' and to_char(sai.dt_doc,'MM/YYYY') = _mes_ano and sai.nro_doc = dev.doc_origem and sai.nro_item = dev.item_ref 
+                              where      dev.id_operacao = 'Z' 
+                              order by   sai.dt_doc,sai.nro_item
+
+            LOOP            
+               
+                //RAISE NOTICE  'Nota % ', sai_dev.sai_nro_doc;
+                
+                if (sai_dev.sai_nro_doc is null) then
+                  
+                      UPDATE public.nfe_det_trade SET id_operacao = 'z'
+                      WHERE id_grupo = sai_dev.dev_id_grupo and id_planilha = sai_dev.dev_id_planilha and  nro_linha = sai_dev.dev_nro_linha ;
+                   
+               end if;
+            END LOOP;
+            _saida := 'Conversão OK';
+            RETURN; 
+END;
+$$
+LANGUAGE 'plpgsql'
+go
+
+
+select * from check_devolucao(1,'1001','0003','01/2017');
+
+select cod_emp,local 
+from nfe_det_trade 
+where id_operacao = 'Z'
+group by cod_emp,local 
+
+//select * from nfe_det_trade where id_operacao = 'z';
+
