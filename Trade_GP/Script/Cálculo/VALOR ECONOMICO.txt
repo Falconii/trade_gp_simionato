@@ -31,6 +31,12 @@ IF (VLR COFINS SAIDA > NOVO VLR COFINS) {
 }
 
 
+//Com Pauta
+
+- Codigo
+- Descricao
+- 
+
 //Versão Para Trabalhar Com A Qtd Convertida
 
 Cáculo do valor economico do pis e cofins
@@ -45,21 +51,77 @@ NOVO VLR PIS = NOVA BASE PIS * (PERC PIS SAIDA)
 
 NOVO VLR COFINS = NOVA BASE COFINS * (PERC COFINS SAIDA)
 
-IF (VLR PIS SAIDA > NOVO VLR PIS) {
 
-   VLR PIS ECONOMICO =  VLR PIS SAIDA - NOVO VLR PIS
 
-} else {
+Buscas na tabela de tabela
 
-   VLR PIS ECONOMICO = 0
+-codigo do produto
+
+if (produto foi encontrado){
+
+        pis_minimo    = (qtd_usada * ml) * pis_vlr_litro;
+		
+		confis_minimo = (qtd_usada * ml) * (cofins_vlr_litro);
+
+		if (NOVO VLR PIS < pis_minimo){
+
+		    VLR PIS ECONOMICO = 0
+
+		} else {
+		
+		   IF (VLR PIS SAIDA > NOVO VLR PIS) {
+
+		       VLR PIS ECONOMICO =  VLR PIS SAIDA - NOVO VLR PIS
+
+		   } else {
+
+		       VLR PIS ECONOMICO = 0
+		   }
+		
+		}
+
+		if (NOVO VLR COFINS < cofins_minimo){
+		
+		    VLR COFINS ECONOMICO = 0
+
+		} else {
+		
+			IF (VLR COFINS SAIDA > NOVO VLR COFINS) {
+
+			   VLR COFINS ECONOMICO =  VLR COFINS SAIDA - NOVO VLR COFINS
+
+			} else {
+
+			   VLR COFINS ECONOMICO = 0
+			}
+		   
+
+		}
+		
+
+} else 
+
+      {
+
+
+		IF (VLR PIS SAIDA > NOVO VLR PIS) {
+
+		   VLR PIS ECONOMICO =  VLR PIS SAIDA - NOVO VLR PIS
+
+		} else {
+
+		   VLR PIS ECONOMICO = 0
+		}
+
+		IF (VLR COFINS SAIDA > NOVO VLR COFINS) {
+
+		   VLR COFINS ECONOMICO =  VLR COFINS SAIDA - NOVO VLR COFINS
+
+		} else {
+
+		   VLR COFINS ECONOMICO = 0
+		}
+
+     }
+
 }
-
-IF (VLR COFINS SAIDA > NOVO VLR COFINS) {
-
-   VLR COFINS ECONOMICO =  VLR COFINS SAIDA - NOVO VLR COFINS
-
-} else {
-
-   VLR COFINS ECONOMICO = 0
-}
-

@@ -328,6 +328,10 @@ CREATE TABLE public.nfe_det_trade_val  (
 	taxa                          	numeric(7,2) NULL,
     Icms_St_Unit                    numeric(15,4) NULL,
     qtd_calculada                   numeric(15,4) NULL,
+	vlr_economico_pis_pauta         numeric(18,4) NULL,
+	vlr_economico_cofins_pauta      numeric(18,4) NULL,
+    vlr_economico_pis_corrigido_pauta numeric(18,4) NOT NULL ,
+    vlr_economico_cofins_corrigido_pauta    numeric(18,4) ,
 	usuarioinclusao               	int4 NULL,
 	usuarioatualizacao            	int4 NULL,
 	PRIMARY KEY(id_grupo,id,nro_linha,id_planilha_entrada,nro_linha_entrada)
@@ -335,6 +339,15 @@ CREATE TABLE public.nfe_det_trade_val  (
 WITHOUT OIDS 
 TABLESPACE "Producao"
 GO
+
+/*
+alter table 
+nfe_det_trade_val
+add column vlr_economico_pis_pauta                 numeric(18,4) not null default 0,
+add column vlr_economico_cofins_pauta              numeric(18,4) not null default 0;   
+add column vlr_economico_pis_corrigido_pauta       numeric(18,4) not null default 0,
+add column vlr_economico_cofins_corrigido_pauta    numeric(18,4) not null default 0;   
+*/
 
 DROP TABLE IF EXISTS cont_cab_proc;
 CREATE TABLE public.cont_cab_proc( 
@@ -411,6 +424,21 @@ CREATE TABLE public.saldo_inicial  (
     ct               int4 NOT NULL,
     status           char(1) NOT NULL,
 	PRIMARY KEY(id_grupo,cod_emp,local,material,unid)
+)
+WITHOUT OIDS 
+TABLESPACE "Producao"
+GO
+
+
+DROP TABLE IF EXISTS pauta;
+CREATE TABLE public.pauta  ( 
+    id_grupo         int4 NOT NULL,
+    material         varchar(15) NOT NULL,
+	descricao        varchar(100) NOT NULL,
+	ml   	         int4 NOT NULL,
+    pis_vlr_litro    numeric(15,4) NOT NULL,
+	cofins_vlr_litro numeric(15,4) NOT NULL,
+	PRIMARY KEY(id_grupo,material)
 )
 WITHOUT OIDS 
 TABLESPACE "Producao"
