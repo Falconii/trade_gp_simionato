@@ -1,19 +1,19 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Trade_GP.Dao.postgre;
-using Trade_GP.Util;
 using Trade_GP.Extensoes;
 using Trade_GP.Models;
-using System.Linq;
+using Trade_GP.Util;
 
 namespace Trade_GP
 {
-    public partial class FormValidacoes : Form
+    public partial class FormBoniDestinatario : Form
     {
         private List<ParamLocal> Parametros = new List<ParamLocal>();
 
@@ -34,28 +34,17 @@ namespace Trade_GP
         List<ContadorModel> contadores = new List<ContadorModel>();
 
         public ToolStripMenuItem menu { get; internal set; }
-        public FormValidacoes()
+
+        public FormBoniDestinatario()
         {
             InitializeComponent();
+        }
 
-            
-        }
-        private void FormValidacoes_Load(object sender, EventArgs e)
+        private void FormBoniDestinatario_Load(object sender, EventArgs e)
         {
-            btProximoFlag = false;
 
-            recomeco();
+        }
 
-            status_inicial();
-        }
-        private void FormValidacoes_Activated(object sender, EventArgs e)
-        {
-            WindowState = System.Windows.Forms.FormWindowState.Maximized;
-        }
-        private void FormValidacoes_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            menu.Enabled = true;
-        }
 
         private void recomeco()
         {
@@ -640,12 +629,12 @@ namespace Trade_GP
         {
             gbMensaProcessamento.Visible = false;
             lbTituloMeses.Visible = false;
-            btExcel.Visible    = false;
-            dbMeses.Visible    = false;
-            dbMeses.ReadOnly   = true;
-            dtGridLog.Visible  = false;
+            btExcel.Visible = false;
+            dbMeses.Visible = false;
+            dbMeses.ReadOnly = true;
+            dtGridLog.Visible = false;
             dtGridLog.ReadOnly = true;
-            dbLocais.Visible   = false;
+            dbLocais.Visible = false;
             dbLocais.ReadOnly = true;
             btProcessar.Enabled = true;
             lblCancelamentoAtivado.Visible = false;
@@ -832,15 +821,18 @@ namespace Trade_GP
         }
         private void btNovo_Click(object sender, EventArgs e)
         {
-            status_processado();
-        }
-        private void btNovo_Click_1(object sender, EventArgs e)
-        {
             recomeco();
             status_processado();
         }
+   
+        private void FormBoniDestinatario_Activated(object sender, EventArgs e)
+        {
+            WindowState = System.Windows.Forms.FormWindowState.Maximized;
+        }
+
+        private void FormBoniDestinatario_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            menu.Enabled = true;
+        }
     }
 }
-
-
-

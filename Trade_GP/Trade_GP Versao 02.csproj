@@ -134,7 +134,9 @@
     <Compile Include="Dao\postgre\daoContCabProc.cs" />
     <Compile Include="Dao\postgre\daoCliente.cs" />
     <Compile Include="Dao\postgre\daoFechamento.cs" />
+    <Compile Include="Dao\postgre\daoNfeCabTrade5910.cs" />
     <Compile Include="Dao\postgre\daoNfeCabTrade.cs" />
+    <Compile Include="Dao\postgre\daoNfeDetTrade5910 .cs" />
     <Compile Include="Dao\postgre\daoNfeDetTrade.cs" />
     <Compile Include="Dao\postgre\daoResumo5405.cs" />
     <Compile Include="Dao\postgre\daoSaldo.cs" />
@@ -144,11 +146,23 @@
     <Compile Include="Extensoes\IntExtension.cs" />
     <Compile Include="Extensoes\LongExtension.cs" />
     <Compile Include="Extensoes\StringExtension.cs" />
+    <Compile Include="FormBoniDestinatario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBoniDestinatario.Designer.cs">
+      <DependentUpon>FormBoniDestinatario.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormImplantacaoSaldo.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormImplantacaoSaldo.Designer.cs">
       <DependentUpon>FormImplantacaoSaldo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormImportarTxt5910.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormImportarTxt5910.Designer.cs">
+      <DependentUpon>FormImportarTxt5910.cs</DependentUpon>
     </Compile>
     <Compile Include="FormRelatorioAnalitico.cs">
       <SubType>Form</SubType>
@@ -266,6 +280,7 @@
     </Compile>
     <Compile Include="MDISingleton.cs" />
     <Compile Include="Models\AssinaturaModel.cs" />
+    <Compile Include="Models\BoniNota.cs" />
     <Compile Include="Models\Cliente.cs" />
     <Compile Include="Models\ClienteByEmpLocal.cs" />
     <Compile Include="Models\ContadorModel.cs" />
@@ -275,7 +290,9 @@
     <Compile Include="Models\Fechamento.cs" />
     <Compile Include="Models\LayOutModel.cs" />
     <Compile Include="Models\LayOutModelV100.cs" />
+    <Compile Include="Models\NfeCabTrade5910 .cs" />
     <Compile Include="Models\NfeCabTrade.cs" />
+    <Compile Include="Models\NfeDetTrade5910 .cs" />
     <Compile Include="Models\NfeDetTrade.cs" />
     <Compile Include="Models\Nfe_CabE_Qry_01.cs" />
     <Compile Include="Models\Nfe_DetE_Qry_00 .cs" />
@@ -301,14 +318,21 @@
     <Compile Include="Util\Filtro_Nfe_Det_01.cs" />
     <Compile Include="Util\GridLocais.cs" />
     <Compile Include="Util\ImportacaoAsync.cs" />
+    <Compile Include="Util\ImportacaoAsync5910.cs" />
     <Compile Include="Util\LayOutIndex.cs" />
     <Compile Include="Util\LayOutPadrao.cs" />
     <Compile Include="Util\ParamLocal.cs" />
     <Compile Include="Util\Periodo.cs" />
     <Compile Include="Util\UsuarioSistema.cs" />
     <Compile Include="Util\Validacoes.cs" />
+    <EmbeddedResource Include="FormBoniDestinatario.resx">
+      <DependentUpon>FormBoniDestinatario.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormImplantacaoSaldo.resx">
       <DependentUpon>FormImplantacaoSaldo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormImportarTxt5910.resx">
+      <DependentUpon>FormImportarTxt5910.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormRelatorioAnalitico.resx">
       <DependentUpon>FormRelatorioAnalitico.cs</DependentUpon>

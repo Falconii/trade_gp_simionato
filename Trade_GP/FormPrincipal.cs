@@ -282,5 +282,31 @@ namespace Trade_GP
 
             form.Show();
         }
+
+        private void importarTXT5910_Click(object sender, EventArgs e)
+        {
+            FormImportarTxt5910 form = new FormImportarTxt5910();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
+
+        private void processamentoDestinatárioToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormBoniDestinatario form = new FormBoniDestinatario();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
     }
 }
