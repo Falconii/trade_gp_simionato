@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Trade_GP.Dao.postgre;
 using Trade_GP.DataBase;
+using Trade_GP.Ipi.Forms;
 using Trade_GP.Models;
 using Trade_GP.Util;
+using Trade_GP.DataBase;
 
 namespace Trade_GP
 {
@@ -65,6 +67,37 @@ namespace Trade_GP
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            configuraMenu(RunCommand.ConfiguracoesMaster.master);
+        }
+
+        private void configuraMenu(string projeto)
+        {
+
+            if (projeto == "IPI")
+            {
+                /* Pis_Cofins */
+                importaçãoToolStripMenuItem.Visible = false;
+                consultas5405.Visible = false;
+                processamentos5405.Visible = false;
+                relatórios5405.Visible = false;
+                processamento5910.Visible = false;
+                importacao5910.Visible = false;
+                /* IPI */
+                importaçãoIPI.Visible = true;
+                processamentoIPI.Visible = true;
+            } else
+            {
+                /* Pis_Cofins */
+                importaçãoToolStripMenuItem.Visible = true;
+                consultas5405.Visible = true;
+                processamentos5405.Visible = true;
+                relatórios5405.Visible = true;
+                processamento5910.Visible = true;
+                importacao5910.Visible = true;
+                /* IPI */
+                importaçãoIPI.Visible = false;
+                processamentoIPI.Visible = false;
+            }
 
         }
 
@@ -299,6 +332,24 @@ namespace Trade_GP
         private void processamentoDestinatárioToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormBoniDestinatario form = new FormBoniDestinatario();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void importaçãoTXTIpiClick_Click(object sender, EventArgs e)
+        {
+            FormImportacaoIPI form = new FormImportacaoIPI();
 
             ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
 

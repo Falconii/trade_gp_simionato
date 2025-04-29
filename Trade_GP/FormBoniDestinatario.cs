@@ -554,14 +554,8 @@ namespace Trade_GP
             int i = 0;
 
             string Periodo = "";
-
-            int _qtd_dev = 0;
-
-            int _qtd_devs = 0;
-
-            int _total_dev = 0;
-
-            //pgProcesso.Value = 0;
+            int _total = 0;
+            int _qtd_boni = 0;
 
             daoNfeDetTrade daoDet = new daoNfeDetTrade();
 
@@ -579,7 +573,7 @@ namespace Trade_GP
                 try
                 {
 
-                    _qtd_dev = await daoDet.Check_Devx(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
+                    _qtd_boni = await daoDet.boni_destinatario(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
 
                 }
                 catch (Exception ex)
@@ -587,9 +581,7 @@ namespace Trade_GP
                     MessageBox.Show($"Erro: {ex.Message}");
                 }
 
-                _qtd_dev += _qtd_devs;
-
-                _total_dev += _qtd_dev;
+                _total += _qtd_boni;
 
                 tar.Final = DateTime.Now;
 
@@ -599,7 +591,7 @@ namespace Trade_GP
 
                 tar.Status = $"Processado {elapsedTime}";
 
-                tar.Observacao = $"N° Devoluções Encontradas {_qtd_dev}.";
+                tar.Observacao = $"N° Bonificações Encontradas {_qtd_boni}.";
 
                 if (Cancelar)
                 {
@@ -623,7 +615,7 @@ namespace Trade_GP
 
             i = lsTarefas.Count;
 
-            return _total_dev;
+            return _total;
         }
         private void status_inicial()
         {
@@ -717,7 +709,7 @@ namespace Trade_GP
 
             contadores = new List<ContadorModel>();
 
-            FormAviso formAviso = new FormAviso("Verificando Notas Não Processadas");
+            FormAviso formAviso = new FormAviso("Verificando Bonificações Não Processadas");
 
             try
             {
@@ -735,8 +727,7 @@ namespace Trade_GP
 
                 periodos = string.Join("','", Parametros[0].Periodos.Select(p => p.Data));
 
-                contadores = await dao.Conta_Nfe_DevolucoesByDay(1, Parametros[0].Cod_Emp, locais, periodos);
-
+                contadores = await dao.Conta_Nfe_BonificacaoByDay(1, Parametros[0].Cod_Emp, locais, periodos);
 
 
             }

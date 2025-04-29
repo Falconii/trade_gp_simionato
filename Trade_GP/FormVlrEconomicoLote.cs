@@ -173,40 +173,6 @@ namespace Trade_GP
 
             parametros.Dispose();
         }
-        private void NewTarefas(string periodo)
-        {
-            int seq = 1;
-
-            string[] mes_ano = periodo.Split('/');
-
-            int primeiroDia = (mes_ano[1] == "2017" && mes_ano[0] == "03") ? 16 : 1; 
-
-            int ultimoDia   = DateTime.DaysInMonth(mes_ano[1].IntParse(), mes_ano[0].IntParse());
-
-            lsTarefas.Clear();
-
-            for (int dia = primeiroDia; dia <= ultimoDia; dia++)
-            {
-                var  hoje = new DateTime(mes_ano[1].IntParse(), mes_ano[0].IntParse(), dia);
-
-                tarefa obj = new tarefa()
-                {
-                    Sequencia = seq,
-                    Periodo = $"{periodo}",
-                    Data = hoje.ToString("dd/MM/yyyy"),
-                    Inicial = null,
-                    Final = null,
-                    Observacao = "",
-                    Status = "Aguardando"
-                };
-
-                lsTarefas.Add(obj);
-                seq++;
-            }
-
-            LoadDbGridLog();
-        }
-
         private void NewTarefasX(string local, int mes, int ano)
         {
             lsTarefas.Clear();

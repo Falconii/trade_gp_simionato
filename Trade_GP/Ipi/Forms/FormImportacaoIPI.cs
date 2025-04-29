@@ -11,12 +11,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Trade_GP.Dao.postgre;
 using Trade_GP.Extensoes;
+using Trade_GP.Ipi.Util;
 using Trade_GP.Models;
 using Trade_GP.Util;
 
-namespace Trade_GP
+namespace Trade_GP.Ipi.Forms
 {
-    public partial class FormImportarTxt5910 : Form
+    public partial class FormImportacaoIPI : Form
     {
 
         List<ErrosImportacao> ListaErros = new List<ErrosImportacao>();
@@ -26,12 +27,12 @@ namespace Trade_GP
         int Page = 200;
         public Visoes visao = Visoes.Browser;
         public ToolStripMenuItem menu { get; internal set; }
-        public FormImportarTxt5910()
+        public FormImportacaoIPI()
         {
             InitializeComponent();
         }
 
-        private void FormImportarTxt5910_Load(object sender, EventArgs e)
+        private void FormImportacaoIPI_Load(object sender, EventArgs e)
         {
             FileInfo[] fileInformation = null;
             List<ErrosImportacao> Erros = new List<ErrosImportacao>();
@@ -40,7 +41,6 @@ namespace Trade_GP
             LoadDbGridView(fileInformation);
             BuscandoArquivo();
         }
-
 
         private void ConfiguraDbGridView()
         {
@@ -83,13 +83,8 @@ namespace Trade_GP
             else
             {
                 foreach (FileInfo info in fileInformation)
-                {   
-                    if ( (info.Extension.ToUpper() != ".TXT" || info.Length == 0))
-                    {
-                        continue;
-                    }
-
-                    if (info.Name.Contains("-E_"))
+                {
+                    if (info.Extension.ToUpper() != ".TXT" || info.Length == 0 || getTipoEntradaSaida(info.Name) == "E")
                     {
                         continue;
                     }
@@ -239,6 +234,112 @@ namespace Trade_GP
             }
         }
 
+        private void lbTitulo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        class Arquivos
+        {
+            public int Item { get; set; }
+            public String Pasta { get; set; }
+            public String Nome { get; set; }
+            public DateTime Data { get; set; }
+            public String Tamanho { get; set; }
+            public String Obs { get; set; }
+
+        }
+
+        class TotalSaiEnt
+        {
+            public int Entrada { get; set; }
+            public int Saida { get; set; }
+        }
+
+        private string getTipoEntradaSaida(string arquivo)
+        {
+            string retorno = "";
+
+            if (arquivo.Contains("-E_"))
+            {
+                retorno = "E";
+            }
+
+            if (arquivo.Contains("-S_"))
+            {
+                retorno = "S";
+            }
+
+            return retorno;
+        }
+
+        private TotalSaiEnt Soma_EntSai(FileInfo[] fileInformation)
+        {
+            TotalSaiEnt Retorno = new TotalSaiEnt();
+
+            Retorno.Entrada = 0;
+            Retorno.Saida = 0;
+
+            foreach (FileInfo info in fileInformation)
+            {
+                if (getTipoEntradaSaida(info.Name) == "S")
+                {
+                    Retorno.Saida++;
+                }
+                else
+                {
+                    Retorno.Entrada++;
+                }
+            }
+            return Retorno;
+        }
+
+        private void FormImportacaoIPI_Activated(object sender, EventArgs e)
+        {
+            WindowState = System.Windows.Forms.FormWindowState.Maximized;
+        }
+
+        private void FormImportacaoIPI_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            menu.Enabled = true;
+        }
+
+        private void btPesquisar_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                folderBrowserDialog.Description = "Escolha A Pasta Para A Importação";
+                folderBrowserDialog.SelectedPath = tbFolder.Text;
+                folderBrowserDialog.ShowNewFolderButton = false;
+                DialogResult result = folderBrowserDialog.ShowDialog();
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderBrowserDialog.SelectedPath))
+                {
+                    var folderName = folderBrowserDialog.SelectedPath;
+                    tbFolder.Text = folderName;
+                    DirectoryInfo di = new DirectoryInfo(folderName);
+                    FileInfo[] fileInformation = di.GetFiles();
+                    if (fileInformation.Length == 0)
+                    {
+                        MessageBox.Show("Não Existem Arquivos Compativeis Com a Importação!", "Atenção!");
+                        BuscandoArquivo();
+                    }
+                    else
+                    {
+                        dashboardProgress.Value = 0;
+                        dashboardProgress.Minimum = 0;
+                        dashboardProgress.Maximum = 100;
+                        LoadDbGridView(fileInformation);
+                        PreProcessamento();
+                    }
+                }
+                else
+                {
+                    BuscandoArquivo();
+                }
+            }
+
+        }
+
         private async void BtImportar_Click(object sender, EventArgs e)
         {
             DuranteProcessamento();
@@ -253,11 +354,11 @@ namespace Trade_GP
 
             string PathDestino = "";
 
-            ImportacaoAsync5910.lsMoviDet.Clear();
+            ImportacaoAsyncIPI.lsMoviDet.Clear();
 
-            ImportacaoAsync5910.StaticLsErrosImportacao.Clear();
+            ImportacaoAsyncIPI.StaticLsErrosImportacao.Clear();
 
-            LoadDbGridErros(ImportacaoAsync5910.StaticLsErrosImportacao, true);
+            LoadDbGridErros(ImportacaoAsyncIPI.StaticLsErrosImportacao, true);
 
             lbProcesso.Text = "Iniciando Processo!";
             pbProcesso.Value = 0;
@@ -302,94 +403,89 @@ namespace Trade_GP
                 catch (Exception ex)
                 {
 
-                    ImportacaoAsync5910.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Planilha Esta Aberta Ou Não Existe!"));
+                    ImportacaoAsyncIPI.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Planilha Esta Aberta Ou Não Existe!"));
 
                     ErroPlanilhaOpen = true;
                 }
 
-                daoNfeCabTrade5910 dao = new daoNfeCabTrade5910();
+                daoNfeCabTrade dao = new daoNfeCabTrade();
 
-                NfeCabTrade5910 result = dao.SeekByPlanilhaV2(UsuarioSistema.Id_Grupo, FileName);
+                NfeCabTrade result = dao.SeekByPlanilhaV2(UsuarioSistema.Id_Grupo, FileName);
 
-                string EntradaSaida    = getTipoEntradaSaida(FileName);
+                string EntradaSaida = getTipoEntradaSaida(FileName);
 
-                //IMPORTAÇÃO 5910
+                //Notas Bonificação / Vendas
                 if (cbCPFO.SelectedIndex == 0)
                 {
                     if (EntradaSaida != "S")
                     {
-                        ImportacaoAsync5910.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Arquivo Não Compativel Com A Opção, Escolha Apenas Saidas"));
+                        ImportacaoAsyncIPI.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Arquivo Não Compativel Com A Opção, Escolha Apenas Saidas"));
                     }
                     else
                     {
                         if (ErroPlanilhaOpen)
                         {
-                            ImportacaoAsync5910.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Planilha Aberta Por Outra Aplicação"));
+                            ImportacaoAsyncIPI.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Planilha Aberta Por Outra Aplicação"));
                         }
                         if (result != null)
                         {
-                            ImportacaoAsync5910.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Arquivo Duplicado -CABEÇALHO!"));
+                            ImportacaoAsyncIPI.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Arquivo Duplicado -CABEÇALHO!"));
                         }
                     }
                 }
-
-                if (ImportacaoAsync5910.StaticLsErrosImportacao.Count == 0)
+                if (ImportacaoAsyncIPI.StaticLsErrosImportacao.Count == 0)
                 {
                     if (result == null)
                     {
 
-                        ImportacaoAsync5910.Cabecalho.Zerar();
+                        ImportacaoAsyncIPI.Cabecalho.Zerar();
 
-                        ImportacaoAsync5910.Cabecalho.Arquivo = FileName;
-
-                        if (cbCPFO.SelectedIndex == 0)
-                        {
-                            ImportacaoAsync5910.Cabecalho.resumo_5405 = "S";
-                        }
+                        ImportacaoAsyncIPI.Cabecalho.Arquivo = FileName;
+                                               
                     }
                     else
                     {
-                        ImportacaoAsync5910.Cabecalho = result;
+                        ImportacaoAsyncIPI.Cabecalho = result;
                     }
                     await ProcessaPlanilha(Path, FileName);
                 }
-                if (ImportacaoAsync5910.StaticLsErrosImportacao.Count > 0)
+                if (ImportacaoAsyncIPI.StaticLsErrosImportacao.Count > 0)
                 {
                     await Task.Run(async delegate
                     {
                         await Task.Delay(500);
                     });
 
-                    LoadDbGridErros(ImportacaoAsync5910.StaticLsErrosImportacao, false);
+                    LoadDbGridErros(ImportacaoAsyncIPI.StaticLsErrosImportacao, false);
                 }
 
-                ImportacaoAsync5910.lsMoviDet.Clear();
+                ImportacaoAsyncIPI.lsMoviDet.Clear();
 
                 Boolean TemWarming = false;
 
-                for (int x = 0; x < ImportacaoAsync5910.StaticLsErrosImportacao.Count; x++)
+                for (int x = 0; x < ImportacaoAsyncIPI.StaticLsErrosImportacao.Count; x++)
                 {
-                    if (ImportacaoAsync5910.StaticLsErrosImportacao[x].Flag == "W")
+                    if (ImportacaoAsyncIPI.StaticLsErrosImportacao[x].Flag == "W")
                     {
-                        ImportacaoAsync5910.StaticLsErrosImportacao.RemoveAt(x);
+                        ImportacaoAsyncIPI.StaticLsErrosImportacao.RemoveAt(x);
                         x--;
                         TemWarming = true;
                     }
                 }
 
 
-                if ((ImportacaoAsync5910.StaticLsErrosImportacao.Count > 0) || TemWarming)
+                if ((ImportacaoAsyncIPI.StaticLsErrosImportacao.Count > 0) || TemWarming)
                 {
 
                     PathDestino = $"{tbFolder.Text}\\RECUSADAS\\";
 
-                    if (ImportacaoAsync5910.StaticLsErrosImportacao.Count > 0)
+                    if (ImportacaoAsyncIPI.StaticLsErrosImportacao.Count > 0)
                     {
 
                         try
                         {
 
-                            dao.DeleteAll(ImportacaoAsync5910.Cabecalho);
+                            dao.DeleteAll(ImportacaoAsyncIPI.Cabecalho);
 
                         }
                         catch (System.IO.IOException ex)
@@ -408,14 +504,14 @@ namespace Trade_GP
 
                     //Atualiza 
 
-                    ImportacaoAsync5910.Cabecalho.Status = 1;
-                    ImportacaoAsync5910.Cabecalho.UsuarioInclusao = UsuarioSistema.Usuario.Codigo;
-                    ImportacaoAsync5910.Cabecalho.DataFechamento = DateTime.Now;
+                    ImportacaoAsyncIPI.Cabecalho.Status = 1;
+                    ImportacaoAsyncIPI.Cabecalho.UsuarioInclusao = UsuarioSistema.Usuario.Codigo;
+                    ImportacaoAsyncIPI.Cabecalho.DataFechamento = DateTime.Now;
 
                     try
                     {
 
-                        dao.Update(ImportacaoAsync5910.Cabecalho);
+                        dao.Update(ImportacaoAsyncIPI.Cabecalho);
 
                     }
                     catch (Exception Ex)
@@ -426,7 +522,7 @@ namespace Trade_GP
                 }
 
 
-                ImportacaoAsync5910.StaticLsErrosImportacao.Clear();
+                ImportacaoAsyncIPI.StaticLsErrosImportacao.Clear();
 
                 CopiaArquivo(FullName, PathDestino, FileName);
 
@@ -452,6 +548,9 @@ namespace Trade_GP
             DirectoryInfo di = new DirectoryInfo(tbFolder.Text);
             FileInfo[] fileInformation = di.GetFiles();
             LoadDbGridView(fileInformation);
+
+
+            MessageBox.Show($"Tempo Do Processamento: {elapsedTime}" + (Cancelar ? " - Processo Cancelado!" : ""), "Atenção!");
 
         }
 
@@ -488,7 +587,7 @@ namespace Trade_GP
                 Page = 200;
             }
 
-            await ImportacaoAsync5910.leArquivoCervejaria(progress, FileName, Path + @"\" + FileName, Page, "5910S");
+            await ImportacaoAsyncIPI.leArquivoCervejaria(progress, FileName, Path + @"\" + FileName, Page, cbCPFO.SelectedIndex == 0 ? "5405S" : cbCPFO.SelectedIndex == 1 ? "5405E" : "TODAS");
 
         }
 
@@ -505,7 +604,7 @@ namespace Trade_GP
                 Page = 200;
             }
 
-            await ImportacaoAsync5910.leArquivoValidaCliente(progress, FileName, Path + @"\" + FileName, Page, cbCPFO.SelectedIndex == 0 ? "S" : "N");
+            await ImportacaoAsyncIPI.leArquivoValidaCliente(progress, FileName, Path + @"\" + FileName, Page, cbCPFO.SelectedIndex == 0 ? "S" : "N");
 
         }
 
@@ -514,23 +613,23 @@ namespace Trade_GP
             Progress<ProgressReportModel> progress = new Progress<ProgressReportModel>();
             progress.ProgressChanged += ReportProgress;
 
-            if (ImportacaoAsync5910.StaticLsErrosImportacao.Count > 0)
+            if (ImportacaoAsyncIPI.StaticLsErrosImportacao.Count > 0)
             {
 
-                LoadDbGridErros(ImportacaoAsync5910.StaticLsErrosImportacao, false);
+                LoadDbGridErros(ImportacaoAsyncIPI.StaticLsErrosImportacao, false);
 
             }
             else
             {
 
-                //await ImportacaoAsync5910.MultInsertAsyncNFE_DET(progress, Page);
+                //await ImportacaoAsyncIPI.MultInsertAsyncNFE_DET(progress, Page);
 
             }
 
-            if (ImportacaoAsync5910.StaticLsErrosImportacao.Count > 0)
+            if (ImportacaoAsyncIPI.StaticLsErrosImportacao.Count > 0)
             {
 
-                LoadDbGridErros(ImportacaoAsync5910.StaticLsErrosImportacao, false);
+                LoadDbGridErros(ImportacaoAsyncIPI.StaticLsErrosImportacao, false);
 
             }
 
@@ -567,41 +666,7 @@ namespace Trade_GP
             }
         }
 
-        private void btPesquisar_Click(object sender, EventArgs e)
-        {
-            using (FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog())
-            {
-                folderBrowserDialog.Description = "Escolha A Pasta Para A Importação";
-                folderBrowserDialog.SelectedPath = tbFolder.Text;
-                folderBrowserDialog.ShowNewFolderButton = false;
-                DialogResult result = folderBrowserDialog.ShowDialog();
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderBrowserDialog.SelectedPath))
-                {
-                    var folderName = folderBrowserDialog.SelectedPath;
-                    tbFolder.Text = folderName;
-                    DirectoryInfo di = new DirectoryInfo(folderName);
-                    FileInfo[] fileInformation = di.GetFiles();
-                    if (fileInformation.Length == 0)
-                    {
-                        MessageBox.Show("Não Existem Arquivos Compativeis Com a Importação!", "Atenção!");
-                        BuscandoArquivo();
-                    }
-                    else
-                    {
-                        dashboardProgress.Value = 0;
-                        dashboardProgress.Minimum = 0;
-                        dashboardProgress.Maximum = 100;
-                        LoadDbGridView(fileInformation);
-                        PreProcessamento();
-                    }
-                }
-                else
-                {
-                    BuscandoArquivo();
-                }
-            }
-
-        }
+    
 
         private void cbLayOut_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -687,192 +752,5 @@ namespace Trade_GP
 
         }
 
-        private async void btValidarCliente_Click(object sender, EventArgs e)
-        {
-            DuranteProcessamento();
-
-            Boolean ErroPlanilhaOpen = false;
-
-
-            string Path = $"{tbFolder.Text}\\";
-
-            string FileName = "";
-
-            string FullName = "";
-
-            string PathDestino = "";
-
-            ImportacaoAsync5910.lsMoviDet.Clear();
-            ImportacaoAsync5910.StaticLsErrosImportacao.Clear();
-
-            LoadDbGridErros(ImportacaoAsync5910.StaticLsErrosImportacao, true);
-
-            lbProcesso.Text = "Iniciando Processo!";
-            pbProcesso.Value = 0;
-            pbProcesso.Minimum = 0;
-            pbProcesso.Maximum = dataGridView1.Rows.Count - 1;
-
-            dashboardProgress.Value = 0;
-            lbMensagem.Text = "Iniciando O Processo!";
-
-            var watch = Stopwatch.StartNew();
-
-            for (int y = 0; y < dataGridView1.Rows.Count; y++)
-            {
-                pbProcesso.Value = y;
-
-                if (dataGridView1.Rows[y].Cells[2].Value == null)
-                {
-
-                    continue;
-
-                }
-
-                FileName = $"{dataGridView1.Rows[y].Cells[2].Value.ToString()}";
-
-                FullName = $"{Path}{FileName}";
-
-                lbProcesso.Text = $"FASE 01 - Processando {FullName} - {y + 1}//{dataGridView1.Rows.Count - 1} ";
-
-                //Verificando Arquivo TXT
-
-                try
-                {
-
-                    var stream = File.Open(FullName, FileMode.Open, FileAccess.Read);
-
-                    stream.Close();
-
-                    ErroPlanilhaOpen = false;
-
-                }
-                catch (Exception ex)
-                {
-
-                    ImportacaoAsync5910.StaticLsErrosImportacao.Add(new ErrosImportacao("W", FileName, "", "", "", 0, "Planilha Esta Aberta Ou Não Existe!"));
-
-                    ErroPlanilhaOpen = true;
-                }
-
-
-                await ProcessaCliente(Path, FileName);
-
-
-                if (ImportacaoAsync5910.StaticLsErrosImportacao.Count > 0)
-                {
-                    await Task.Run(async delegate
-                    {
-                        await Task.Delay(500);
-                    });
-
-                    LoadDbGridErros(ImportacaoAsync5910.StaticLsErrosImportacao, true);
-                }
-
-                if (Cancelar)
-                {
-                    break;
-                }
-            }
-
-            watch.Stop();
-
-            TimeSpan ts = watch.Elapsed;
-
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}", ts.Hours, ts.Minutes, ts.Seconds);
-
-            lbMensagem.Text = $"Tempo Do Processamento: {elapsedTime}" + (Cancelar ? " - Processo Cancelado!" : "");
-
-            dashboardProgress.Value = 0;
-
-            BuscandoArquivo();
-
-            DirectoryInfo di = new DirectoryInfo(tbFolder.Text);
-            FileInfo[] fileInformation = di.GetFiles();
-            LoadDbGridView(fileInformation);
-
-        }
-
-        private void lbTitulo_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void tbFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private string getTipoEntradaSaida(string arquivo)
-        {
-            string retorno = "";
-
-            if (arquivo.Contains("-E_"))
-            {
-                retorno = "E";
-            }
-
-            if (arquivo.Contains("-S_"))
-            {
-                retorno = "S";
-            }
-
-            return retorno;
-        }
-
-
-
-        private TotalSaiEnt Soma_EntSai(FileInfo[] fileInformation)
-        {
-            TotalSaiEnt Retorno = new TotalSaiEnt();
-
-            Retorno.Entrada = 0;
-            Retorno.Saida = 0;
-
-            foreach (FileInfo info in fileInformation)
-            {
-                if (getTipoEntradaSaida(info.Name) == "S")
-                {
-                    Retorno.Saida++;
-                }
-                else
-                {
-                    Retorno.Entrada++;
-                }
-            }
-            return Retorno;
-        }
-
-
-        class Arquivos
-        {
-            public int Item { get; set; }
-            public String Pasta { get; set; }
-            public String Nome { get; set; }
-            public DateTime Data { get; set; }
-            public String Tamanho { get; set; }
-            public String Obs { get; set; }
-
-        }
-
-        class TotalSaiEnt
-        {
-            public int Entrada { get; set; }
-            public int Saida { get; set; }
-        }
-
-        private void FormImportarTxt5910_Activated(object sender, EventArgs e)
-        {
-            WindowState = System.Windows.Forms.FormWindowState.Maximized;
-        }
-
-        private void FormImportarTxt5910_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            menu.Enabled = true;
-        }
     }
 }

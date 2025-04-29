@@ -170,6 +170,12 @@
     <Compile Include="FormRelatorioAnalitico.Designer.cs">
       <DependentUpon>FormRelatorioAnalitico.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormResgate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormResgate.Designer.cs">
+      <DependentUpon>FormResgate.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormSaldosLote.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -272,6 +278,13 @@
     <Compile Include="FormVlrEconomico.Designer.cs">
       <DependentUpon>FormVlrEconomico.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ipi\Forms\FormImportacaoIPI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormImportacaoIPI.Designer.cs">
+      <DependentUpon>FormImportacaoIPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ipi\Util\ImportacaoAsyncIPI.cs" />
     <Compile Include="manutencao.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -284,6 +297,7 @@
     <Compile Include="Models\Cliente.cs" />
     <Compile Include="Models\ClienteByEmpLocal.cs" />
     <Compile Include="Models\ContadorModel.cs" />
+    <Compile Include="Models\ContadorRelModel.cs" />
     <Compile Include="Models\Estado.cs" />
     <Compile Include="Models\ContDetProc.cs" />
     <Compile Include="Models\ContCabProc.cs" />
@@ -321,6 +335,7 @@
     <Compile Include="Util\ImportacaoAsync5910.cs" />
     <Compile Include="Util\LayOutIndex.cs" />
     <Compile Include="Util\LayOutPadrao.cs" />
+    <Compile Include="Util\LoadConexoes.cs" />
     <Compile Include="Util\ParamLocal.cs" />
     <Compile Include="Util\Periodo.cs" />
     <Compile Include="Util\UsuarioSistema.cs" />
@@ -336,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormRelatorioAnalitico.resx">
       <DependentUpon>FormRelatorioAnalitico.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormResgate.resx">
+      <DependentUpon>FormResgate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormSaldosLote.resx">
       <DependentUpon>FormSaldosLote.cs</DependentUpon>
@@ -385,6 +403,9 @@
     <EmbeddedResource Include="FormVlrEconomico.resx">
       <DependentUpon>FormVlrEconomico.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Ipi\Forms\FormImportacaoIPI.resx">
+      <DependentUpon>FormImportacaoIPI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="manutencao.resx">
       <DependentUpon>manutencao.cs</DependentUpon>
     </EmbeddedResource>
@@ -426,6 +447,7 @@
     <Content Include="Script\Apoio\implantacao de saldo 1004 0001.sql" />
     <Content Include="Script\etapa_extenso.sql" />
     <Content Include="Script\Oficial 04 02 2025\aprendendo.txt" />
+    <Content Include="Script\Oficial 04 02 2025\Excluir O Controle De Estoque.sql" />
     <Content Include="Script\Oficial 04 02 2025\ia.txt" />
     <Content Include="Script\reavaliar\calculo_saldov2.sql" />
     <Content Include="Script\reavaliar\nova devolucao.sql" />

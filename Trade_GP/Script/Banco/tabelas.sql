@@ -155,6 +155,8 @@ CREATE INDEX indice_dev_entrada
 GO
 CREATE INDEX indice_boni_data ON public.nfe_det_trade (id_grupo,cod_emp,"local",id_operacao,dt_ref,cnpj_cpf,material);
 go
+CREATE INDEX indice_boni_nro_doc ON public.nfe_det_trade (id_grupo,cod_emp,"local",id_operacao,dt_ref,cnpj_cpf,material,nro_doc);
+go
 
 /*
 
@@ -162,8 +164,11 @@ go
 ALTER TABLE Nfe_Det_Trade 
    Add column boni_planilha  int4 NOT NULL default 0,
    Add column boni_linha     int4 NOT NULL default 0;
-
+GO
 CREATE INDEX indice_boni_data ON public.nfe_det_trade (id_grupo,cod_emp,"local",id_operacao,dt_ref,cnpj_cpf,material);
+GO
+CREATE INDEX indice_boni_nro_doc ON public.nfe_det_trade (id_grupo,cod_emp,"local",id_operacao,dt_ref,cnpj_cpf,material,nro_doc);
+go
 
 */
 
