@@ -278,11 +278,35 @@
     <Compile Include="FormVlrEconomico.Designer.cs">
       <DependentUpon>FormVlrEconomico.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ipi\Forms\FormBoniXVendas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormBoniXVendas.Designer.cs">
+      <DependentUpon>FormBoniXVendas.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ipi\Forms\FormImportacaoIPI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Ipi\Forms\FormImportacaoIPI.Designer.cs">
       <DependentUpon>FormImportacaoIPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormParametrosIpi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormParametrosIpi.Designer.cs">
+      <DependentUpon>FormParametrosIpi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormRelatorioAnaliticoIpi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormRelatorioAnaliticoIpi.Designer.cs">
+      <DependentUpon>FormRelatorioAnaliticoIpi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormValorizaçãoIpi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ipi\Forms\FormValorizaçãoIpi.Designer.cs">
+      <DependentUpon>FormValorizaçãoIpi.cs</DependentUpon>
     </Compile>
     <Compile Include="Ipi\Util\ImportacaoAsyncIPI.cs" />
     <Compile Include="manutencao.cs">
@@ -403,8 +427,20 @@
     <EmbeddedResource Include="FormVlrEconomico.resx">
       <DependentUpon>FormVlrEconomico.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Ipi\Forms\FormBoniXVendas.resx">
+      <DependentUpon>FormBoniXVendas.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Ipi\Forms\FormImportacaoIPI.resx">
       <DependentUpon>FormImportacaoIPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ipi\Forms\FormParametrosIpi.resx">
+      <DependentUpon>FormParametrosIpi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ipi\Forms\FormRelatorioAnaliticoIpi.resx">
+      <DependentUpon>FormRelatorioAnaliticoIpi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ipi\Forms\FormValorizaçãoIpi.resx">
+      <DependentUpon>FormValorizaçãoIpi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="manutencao.resx">
       <DependentUpon>manutencao.cs</DependentUpon>

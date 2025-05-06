@@ -75,28 +75,48 @@ namespace Trade_GP
 
             if (projeto == "IPI")
             {
-                /* Pis_Cofins */
-                importaçãoToolStripMenuItem.Visible = false;
+                /* Pis_Cofins_5405 */
+                importação5405.Visible = false;
                 consultas5405.Visible = false;
                 processamentos5405.Visible = false;
                 relatórios5405.Visible = false;
+                /* Pis_Cofins_5910 */
                 processamento5910.Visible = false;
                 importacao5910.Visible = false;
                 /* IPI */
                 importaçãoIPI.Visible = true;
-                processamentoIPI.Visible = true;
+                ProcessamentoIpi.Visible = true;
+                RelatorioIPI.Visible = true;
             } else
+             if (projeto == "Pis_Cofins_5405")
             {
-                /* Pis_Cofins */
-                importaçãoToolStripMenuItem.Visible = true;
+                /* Pis_Cofins_5405 */
+                importação5405.Visible = true;
                 consultas5405.Visible = true;
                 processamentos5405.Visible = true;
                 relatórios5405.Visible = true;
+                /* Pis_Cofins_5910 */
+                processamento5910.Visible = false;
+                importacao5910.Visible = false;
+                /* IPI */
+                importaçãoIPI.Visible = false;
+                ProcessamentoIpi.Visible = false;
+                RelatorioIPI.Visible = false;
+            }
+            if (projeto == "Pis_Cofins_5910")
+            {
+                /* Pis_Cofins_5405 */
+                importação5405.Visible = true;
+                consultas5405.Visible = false;
+                processamentos5405.Visible = false;
+                relatórios5405.Visible = false;
+                /* Pis_Cofins_5910 */
                 processamento5910.Visible = true;
                 importacao5910.Visible = true;
                 /* IPI */
                 importaçãoIPI.Visible = false;
-                processamentoIPI.Visible = false;
+                ProcessamentoIpi.Visible = false;
+                RelatorioIPI.Visible = false;
             }
 
         }
@@ -350,6 +370,47 @@ namespace Trade_GP
         private void importaçãoTXTIpiClick_Click(object sender, EventArgs e)
         {
             FormImportacaoIPI form = new FormImportacaoIPI();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
+
+        private void cruzamentoBonifXVendas_Click(object sender, EventArgs e)
+        {
+            FormBoniXVendas form = new FormBoniXVendas();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
+
+        private void valorEconomicoIPI_Click(object sender, EventArgs e)
+        {
+
+            FormValorizaçãoIpi form = new FormValorizaçãoIpi();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
+
+        private void RelatorioAnaliticoIPI_Click(object sender, EventArgs e)
+        {
+
+            FormRelatorioAnaliticoIpi form = new FormRelatorioAnaliticoIpi();
 
             ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
 

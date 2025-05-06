@@ -82,7 +82,7 @@ namespace Trade_GP
 
             contadores = new List<ContadorModel>();
         }
-    private void LoadDbGridLocais()
+        private void LoadDbGridLocais()
         {
 
             lsLocais.Clear();

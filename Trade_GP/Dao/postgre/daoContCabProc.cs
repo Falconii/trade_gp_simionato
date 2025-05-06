@@ -187,6 +187,74 @@ namespace Trade_GP.Dao.postgre
             return retorno;
         }
 
+
+        public ContCabProc InsertIPI(ContCabProc obj)
+        {
+            ContCabProc retorno = obj;
+
+            string StringInsert = $"INSERT INTO cont_cab_proc " +
+                      "(Id_Grupo, Cod_Emp, Local, Cnpj_cpf, Status_Imp, Status_Dev, Status_Saldos, Status_Valor) " +
+                      "VALUES (" +
+                      $"{obj.Id_Grupo}, '{obj.Cod_Emp}', '{obj.Local}', '{obj.Cnpj_cpf}', '{obj.Status_Imp}', '{obj.Status_Dev}', '{obj.Status_Saldos}', '{obj.Status_Valor}')" +
+                      " ON CONFLICT  (id_grupo, cod_emp, local, cnpj_cpf) DO UPDATE SET Id_Grupo = EXCLUDED.Id_Grupo " +
+                      "RETURNING Id"; // Capture o ID gerado automaticamente
+
+
+
+            Console.WriteLine($"Insert Cont_Cab_Proc: {StringInsert}");
+
+            try
+            {
+
+                using (var objConexao = new NpgsqlConnection(DataBase.RunCommand.connectionString))
+                {
+                    using (var objCommand = new NpgsqlCommand(StringInsert, objConexao))
+                    {
+                        try
+                        {
+                            objConexao.Open();
+
+                            var objDataReader = objCommand.ExecuteReader();
+
+                            if (objDataReader.HasRows)
+                            {
+
+                                while (objDataReader.Read())
+                                {
+
+                                    retorno.Id = Convert.ToInt32(objDataReader["ID"]);
+
+                                }
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+
+
+                            retorno = null;
+
+                            throw new Exception(ex.Message);
+                        }
+                        finally
+                        {
+                            objConexao.Close();
+                        }
+                    }
+                }
+
+            }
+            catch (ExceptionErroImportacao ex)
+            {
+                MessageBox.Show(ex.Message, "Atenção!");
+
+                retorno = null;
+
+            }
+
+            return retorno;
+        }
+
         public void Update(int idGrupo, string codEmp, string localName)
         {
             try

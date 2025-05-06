@@ -19,7 +19,7 @@ namespace Trade_GP
                    
                     string curDir = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory.ToString());
 
-                    RunCommand.SetarBancoV3($"{curDir}//default3.json");
+                    RunCommand.SetarBancoV3($"{curDir}//default.json");
 
                     //RunCommand.SetarBanco("default");
                 }

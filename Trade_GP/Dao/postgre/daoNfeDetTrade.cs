@@ -743,6 +743,98 @@ namespace Trade_GP.Dao.postgre
             return lista;
 
         }
+        public async Task<List<ContadorModel>> Conta_Nfe_Saida_BoniByDayIPI(int id_grupo, string cod_emp, string local, string periodo)
+        {
+
+            List<ContadorModel> lista = new List<ContadorModel>();
+
+            String StringProc = "SELECT det.id_grupo,det.cod_emp,det.local,det.dt_ref,COALESCE(COUNT(det.*), 0) AS TOTAL  FROM nfe_det_trade DET " +
+                               $"WHERE DET.id_grupo = {id_grupo} and DET.cod_emp = '{cod_emp}' and Det.local IN ('{local}') and " +
+                                "  ((det.id_operacao = 'B')  and det.status = '0') and  " +
+                               $"  TO_CHAR(det.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
+                                " group by det.id_grupo,det.cod_emp,det.local,det.dt_ref " +
+                                " order by det.id_grupo,det.cod_emp,det.local,det.dt_ref ";
+
+            string strStringConexao = DataBase.RunCommand.connectionString;
+
+            await Task.Run(() =>
+            {
+                using (var objConexao = new NpgsqlConnection(strStringConexao))
+                {
+                    using (var objCommand = new NpgsqlCommand(StringProc, objConexao))
+                    {
+                        try
+                        {
+                            objConexao.Open();
+
+                            var objDataReader = objCommand.ExecuteReader();
+
+                            if (objDataReader.HasRows)
+                            {
+
+                                while (objDataReader.Read())
+                                {
+                                    ContadorModel contador = new ContadorModel();
+                                    contador.local = objDataReader["LOCAL"].ToString();
+                                    try
+                                    {
+                                        contador.notas = Convert.ToInt32(objDataReader["TOTAL"]);
+                                    }
+                                    catch
+                                    {
+                                        contador.notas = 0;
+                                    }
+                                    try
+                                    {
+                                        contador.dt_ref = Convert.ToDateTime(objDataReader["dt_ref"]);
+                                    }
+                                    catch
+                                    {
+                                        contador.dt_ref = DateTime.Now;
+                                    }
+                                    contador.ano = contador.dt_ref.Year;
+                                    contador.mes = contador.dt_ref.Month;
+                                    lista.Add(contador);
+                                }
+                            }
+
+                        }
+                        catch (NpgsqlException ex)
+                        {
+                            MessageBox.Show($"Erro no PostgreSQL: {ex.Message}");
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            MessageBox.Show($"Operação inválida: {ex.Message}");
+                        }
+                        catch (TimeoutException ex)
+                        {
+                            MessageBox.Show($"Tempo de espera esgotado: {ex.Message}");
+                        }
+                        catch (IOException ex)
+                        {
+                            MessageBox.Show($"Erro de I/O: {ex.Message}");
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            MessageBox.Show($"Argumento inválido: {ex.Message}");
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Erro inesperado: {ex.Message}");
+                        }
+                        finally
+                        {
+                            objConexao.Dispose();
+                        }
+                    }
+                }
+
+            });
+
+            return lista;
+
+        }
         public async Task<List<ContadorModel>> Conta_Nfe_ValoresByDay(int id_grupo, string cod_emp, string local, string periodo)
         {
 

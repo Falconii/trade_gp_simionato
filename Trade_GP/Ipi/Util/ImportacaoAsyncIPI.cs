@@ -23,6 +23,10 @@ namespace Trade_GP.Ipi.Util
 
         public static List<ErrosImportacao> StaticLsErrosImportacao = new List<ErrosImportacao>();
 
+        public static ContCabProc Cabecalhos = new ContCabProc(); // Objeto para armazenar informações de cabeçalho
+
+        public static List<ContDetProc> lsMoviDets = new List<ContDetProc>();
+
         //public static string FiltroCFOP = "1000#1100#1101#1102#1111#1116#1117#1118#1120#1121#1122#1150#1151#1152#1201#1202#1203#1204#1208#1209#1401#1403#1408#1409#1410#1411#1949#2000#2100#2101#2102#2111#2113#2116#2117#2118#2120#2121#2122#2150#2151#2152#2153#2154#2200#2201#2202#2203#2204#2208#2209#2401#2403#2408#2409#2410#2411#2949#5100#5101#5102#5103#5104#5105#5106#5109#5110#5111#5112#5113#5114#5115#5116#5117#5118#5119#5120#5122#5123#5124#5125#5150#5151#5152#5200#5201#5202#5208#5209#5400#5401#5402#5403#5405#5408#5409#5410#5411#5949#6000#6100#6101#6102#6103#6104#6105#6106#6107#6108#6109#6110#6111#6112#6113#6114#6115#6116#6117#6118#6119#6120#6122#6123#6124#6125#6150#6151#6152#6155#6156#6200#6201#6202#6208#6209#6400#6401#6402#6403#6404#6408#6409#6410#6411#6949";
 
         //public static string FiltroCFOP = "1000#1100#1101#1102#1111#1116#1117#1118#1120#1121#1122#1150#1151#1152#1201#1202#1203#1204#1208#1209#1401#1403#1408#1409#1410#1411#1949#2000#2100#2101#2102#2111#2113#2116#2117#2118#2120#2121#2122#2150#2151#2152#2153#2154#2200#2201#2202#2203#2204#2208#2209#2401#2403#2408#2409#2410#2411#2949" +
@@ -147,6 +151,8 @@ namespace Trade_GP.Ipi.Util
                                 if (Cabecalho.Id == 0)
                                 {
                                     daoNfeCabTrade daoCabec = new daoNfeCabTrade();
+                                    daoContCabProc daoCabProc = new daoContCabProc();
+
 
                                     NfeCabTrade Cabec = daoCabec.Insert(Cabecalho);
 
@@ -158,6 +164,32 @@ namespace Trade_GP.Ipi.Util
                                     }
 
                                     Cabecalho.Id = Cabec.Id;
+
+                                    ContCabProc newRecord = new ContCabProc()
+                                    {
+                                        Id_Grupo = 1,
+                                        Cod_Emp = cod_emp,
+                                        Local = local,
+                                        Id = Cabecalho.Id,
+                                        Cnpj_cpf = cli.Cnpj_Cpf,
+                                        Status_Imp = ' ',
+                                        Status_Dev = ' ',
+                                        Status_Saldos = ' ',
+                                        Status_Valor = ' '
+                                    };
+
+                                    try
+                                    {
+                                        Cabecalhos = daoCabProc.InsertIPI(newRecord);
+                                    }
+                                    catch (Exception ex)
+                                    {
+
+                                        ImportacaoAsyncIPI.StaticLsErrosImportacao.Add(new ErrosImportacao("E", fileName, $"{ContadorLinhas}", "cod_emp-local", "", 0, $"Cabeçalho Proc {cod_emp} {local} Não Incluido!"));
+
+                                        break;
+                                    }
+
                                 }
                             }
 
@@ -173,14 +205,19 @@ namespace Trade_GP.Ipi.Util
 
 
                             populalsMoviDet(fields, fileName, ContadorLinhas);
-                                                     
+
+
+                            //populalsMoviDets(fields, fileName, ContadorLinhas, lsMoviDets);
 
 
                             if (lsMoviDet.Count() == Page)
                             {
                                 await MultInsertAsyncMOVI_DET();
 
+                                //await MultInsertAsyncMOVI_DETs();
+
                                 lsMoviDet.Clear();
+                                //lsMoviDets.Clear();
                             }
 
 
@@ -196,7 +233,11 @@ namespace Trade_GP.Ipi.Util
 
                         await MultInsertAsyncMOVI_DET();
 
+                        //await MultInsertAsyncMOVI_DETs();
+
                         lsMoviDet.Clear();
+
+                        //lsMoviDets.Clear();
                     }
 
                     Console.WriteLine($"TOTAL DE LINHAS: {ImportacaoAsyncIPI.lsMoviDet.Count}");
@@ -543,6 +584,125 @@ namespace Trade_GP.Ipi.Util
 
         }
 
+        public static async Task MultInsertAsyncMOVI_DETs()
+        {
+            ProgressReportModel report = new ProgressReportModel();
+
+            try
+            {
+                Console.WriteLine("Iniciando a operação MultInsertAsyncMOVI_DETs.");
+
+                var daoCabProc = new daoContCabProc();
+                var daoDetProc = new daoContDetProc();
+
+                // 1. Inserir registros na tabela cont_cab_proc e manter um dicionário de locais para IDs
+                Dictionary<string, int> locaisParaIds = new Dictionary<string, int>();
+
+                foreach (var obj in lsMoviDets)
+                {
+                    obj.Local = Regex.Replace(obj.Local, "[A-Za-z]", "0");
+                    string chave = $"{obj.Id_Grupo},{obj.Cod_Emp},{obj.Local}";
+
+                    if (!locaisParaIds.ContainsKey(chave))
+                    {
+                        // Extrair os detalhes do local
+                        string[] parts = chave.Split(',');
+                        if (parts.Length < 3)
+                        {
+                            Console.WriteLine("Formato da chave é inválido. Esperado: 'Id_Grupo,Cod_Emp,Local'.");
+                            MessageBox.Show("Formato da chave é inválido. Esperado: 'Id_Grupo,Cod_Emp,Local'.", "Erro");
+                            continue;
+                        }
+
+                        int idGrupo;
+                        if (!int.TryParse(parts[0], out idGrupo))
+                        {
+                            Console.WriteLine($"Id_Grupo inválido: {parts[0]}");
+                            MessageBox.Show($"Id_Grupo inválido: {parts[0]}", "Erro");
+                            continue;
+                        }
+
+                        string codEmp = parts[1];
+                        string localName = parts[2];
+
+                        Console.WriteLine($"Verificando se o registro já existe na tabela cont_cab_proc: Id_Grupo={idGrupo}, Cod_Emp={codEmp}, Local={localName}");
+                        // Verificar se o registro já existe na tabela cont_cab_proc
+                        ContCabProc existingRecord = daoCabProc.SeekByLocal(idGrupo, codEmp, localName);
+
+                        int idCabec;
+                        // Se o registro não existir, insira-o na tabela cont_cab_proc
+                        if (existingRecord == null)
+                        {
+                            Console.WriteLine($"Registro não encontrado. Inserindo novo registro na tabela cont_cab_proc: Id_Grupo={idGrupo}, Cod_Emp={codEmp}, Local={localName}");
+
+                            // Criar um novo objeto ContCabProc
+                            ContCabProc newRecord = new ContCabProc()
+                            {
+                                Id_Grupo = idGrupo,
+                                Cod_Emp = codEmp,
+                                Local = localName,
+                                Status_Imp = ' ',
+                                Status_Dev = ' ',
+                                Status_Saldos = ' ',
+                                Status_Valor = ' '
+                            };
+
+                            // Insira o novo registro na tabela cont_cab_proc e obtenha o ID gerado
+                            ContCabProc insertedRecord = daoCabProc.Insert(newRecord);
+                            idCabec = insertedRecord.Id;
+                            Console.WriteLine($"Novo registro inserido na tabela cont_cab_proc: {insertedRecord.Id}");
+                        }
+                        else
+                        {
+                            idCabec = existingRecord.Id;
+                            Console.WriteLine($"Registro já existe na tabela cont_cab_proc: Id_Grupo={idGrupo}, Cod_Emp={codEmp}, Local={localName}");
+                        }
+
+                        locaisParaIds[chave] = idCabec; // Mapear chave para ID_Cabec
+                    }
+                }
+
+                // 2. Inserir registros na tabela cont_det_proc
+                foreach (var obj in lsMoviDets)
+                {
+                    string chave = $"{obj.Id_Grupo},{obj.Cod_Emp},{obj.Local}";
+
+                    if (locaisParaIds.ContainsKey(chave))
+                    {
+                        obj.Id_Cabec = locaisParaIds[chave];
+
+                        string chaveMesAno = $"{obj.Mes}-{obj.Ano}-{obj.Local}";
+
+                        // Verifica se o registro já existe na tabela cont_det_proc
+                        if (daoDetProc.Seek(obj.Id_Grupo, obj.Cod_Emp, obj.Local, obj.Id_Cabec.ToString(), obj.Ano, obj.Mes, obj.Id_Processo) == null)
+                        {
+                            // Insere o novo registro na tabela cont_det_proc
+                            daoDetProc.Insert(new ContDetProc
+                            {
+                                Id_Grupo = obj.Id_Grupo,
+                                Cod_Emp = obj.Cod_Emp,
+                                Local = obj.Local,
+                                Id_Cabec = obj.Id_Cabec,
+                                Ano = obj.Ano,
+                                Mes = obj.Mes,
+                                Id_Processo = obj.Id_Processo,
+                                Status = obj.Status
+                            });
+
+                            Console.WriteLine($"Inserido na tabela cont_det_proc: {chaveMesAno}");
+                        }
+                    }
+                }
+
+                Console.WriteLine("Operação MultInsertAsyncMOVI_DETs concluída.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Erro na operação MultInsertAsyncMOVI_DETs: {e.Message}\n{e.StackTrace}");
+                MessageBox.Show(e.Message, "Atenção!");
+            }
+        }
+
         private class Propriedades
         {
             public int Qtd { get; set; }
@@ -678,6 +838,33 @@ namespace Trade_GP.Ipi.Util
             return retorno;
         }
 
-     
+
+
+        private static void populalsMoviDets(List<string> fields, string fileName, int ContadorLinhas, List<ContDetProc> lsMoviDets)
+        {
+            try
+            {
+                ContDetProc Det = new ContDetProc();
+
+                Det.Id_Grupo = Cabecalho.Id_Grupo;
+                Det.Id_Cabec = Cabecalhos.Id;
+                Det.Cod_Emp = fields[00].MaxLength(fileName, ContadorLinhas, "Cod_Emp", 6);
+                Det.Local = fields[01].MaxLength(fileName, ContadorLinhas, "Local", 6);
+                Det.Ano = fields[11].Substring(fields[11].Length - 4);
+                Det.Mes = fields[11].Substring(fields[11].Length - 7, 2);
+                Det.Id_Processo = "1";
+                Det.Status = "0";
+
+                lsMoviDets.Add(Det);
+
+                //Cabecalho.NroLinha = Cabecalho.NroLinha + 1;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
     }
 }

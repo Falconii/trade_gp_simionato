@@ -39,23 +39,26 @@ namespace Trade_GP
             this.txtSenha = new System.Windows.Forms.TextBox();
             this.cbGrupo = new System.Windows.Forms.ComboBox();
             this.lblGrupo = new System.Windows.Forms.Label();
+            this.labelProjeto = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // cbUsuarios
             // 
             this.cbUsuarios.FormattingEnabled = true;
-            this.cbUsuarios.Location = new System.Drawing.Point(285, 60);
+            this.cbUsuarios.Location = new System.Drawing.Point(381, 96);
+            this.cbUsuarios.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cbUsuarios.Name = "cbUsuarios";
-            this.cbUsuarios.Size = new System.Drawing.Size(208, 21);
+            this.cbUsuarios.Size = new System.Drawing.Size(276, 24);
             this.cbUsuarios.TabIndex = 7;
             // 
             // btCancelar
             // 
             this.btCancelar.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancelar.Location = new System.Drawing.Point(413, 226);
+            this.btCancelar.Location = new System.Drawing.Point(551, 278);
+            this.btCancelar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btCancelar.Name = "btCancelar";
-            this.btCancelar.Size = new System.Drawing.Size(75, 23);
+            this.btCancelar.Size = new System.Drawing.Size(100, 28);
             this.btCancelar.TabIndex = 13;
             this.btCancelar.Text = "Cancelar";
             this.btCancelar.UseVisualStyleBackColor = true;
@@ -63,9 +66,10 @@ namespace Trade_GP
             // 
             // btLogin
             // 
-            this.btLogin.Location = new System.Drawing.Point(311, 226);
+            this.btLogin.Location = new System.Drawing.Point(415, 278);
+            this.btLogin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btLogin.Name = "btLogin";
-            this.btLogin.Size = new System.Drawing.Size(75, 23);
+            this.btLogin.Size = new System.Drawing.Size(100, 28);
             this.btLogin.TabIndex = 12;
             this.btLogin.Text = "Login";
             this.btLogin.UseVisualStyleBackColor = true;
@@ -74,7 +78,8 @@ namespace Trade_GP
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(23, 24);
+            this.pictureBox1.Location = new System.Drawing.Point(31, 30);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(225, 225);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -84,28 +89,31 @@ namespace Trade_GP
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(282, 107);
+            this.label2.Location = new System.Drawing.Point(377, 143);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
+            this.label2.Size = new System.Drawing.Size(49, 17);
             this.label2.TabIndex = 10;
             this.label2.Text = "Senha";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(282, 44);
+            this.label1.Location = new System.Drawing.Point(377, 76);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(43, 13);
+            this.label1.Size = new System.Drawing.Size(57, 17);
             this.label1.TabIndex = 9;
             this.label1.Text = "Usuário";
             // 
             // txtSenha
             // 
             this.txtSenha.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.txtSenha.Location = new System.Drawing.Point(285, 123);
+            this.txtSenha.Location = new System.Drawing.Point(381, 162);
+            this.txtSenha.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtSenha.Name = "txtSenha";
             this.txtSenha.PasswordChar = '*';
-            this.txtSenha.Size = new System.Drawing.Size(208, 20);
+            this.txtSenha.Size = new System.Drawing.Size(276, 22);
             this.txtSenha.TabIndex = 8;
             // 
             // cbGrupo
@@ -115,25 +123,39 @@ namespace Trade_GP
             this.cbGrupo.FormattingEnabled = true;
             this.cbGrupo.Items.AddRange(new object[] {
             "Cervejaria\t"});
-            this.cbGrupo.Location = new System.Drawing.Point(285, 180);
+            this.cbGrupo.Location = new System.Drawing.Point(380, 222);
+            this.cbGrupo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cbGrupo.Name = "cbGrupo";
-            this.cbGrupo.Size = new System.Drawing.Size(208, 21);
+            this.cbGrupo.Size = new System.Drawing.Size(276, 24);
             this.cbGrupo.TabIndex = 14;
             // 
             // lblGrupo
             // 
             this.lblGrupo.AutoSize = true;
-            this.lblGrupo.Location = new System.Drawing.Point(287, 164);
+            this.lblGrupo.Location = new System.Drawing.Point(383, 202);
+            this.lblGrupo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblGrupo.Name = "lblGrupo";
-            this.lblGrupo.Size = new System.Drawing.Size(36, 13);
+            this.lblGrupo.Size = new System.Drawing.Size(48, 17);
             this.lblGrupo.TabIndex = 15;
             this.lblGrupo.Text = "Grupo";
             // 
+            // labelProjeto
+            // 
+            this.labelProjeto.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelProjeto.ForeColor = System.Drawing.Color.Red;
+            this.labelProjeto.Location = new System.Drawing.Point(386, 30);
+            this.labelProjeto.Name = "labelProjeto";
+            this.labelProjeto.Size = new System.Drawing.Size(265, 46);
+            this.labelProjeto.TabIndex = 16;
+            this.labelProjeto.Text = "Projeto IPI";
+            this.labelProjeto.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // FormLogin
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(563, 292);
+            this.ClientSize = new System.Drawing.Size(751, 359);
+            this.Controls.Add(this.labelProjeto);
             this.Controls.Add(this.lblGrupo);
             this.Controls.Add(this.cbGrupo);
             this.Controls.Add(this.cbUsuarios);
@@ -143,8 +165,9 @@ namespace Trade_GP
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtSenha);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "FormLogin";
-            this.Text = "FormLogin";
+            this.Text = "Login";
             this.Load += new System.EventHandler(this.FormLogin_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
@@ -163,6 +186,6 @@ namespace Trade_GP
         private System.Windows.Forms.TextBox txtSenha;
         private System.Windows.Forms.ComboBox cbGrupo;
         private System.Windows.Forms.Label lblGrupo;
-    
+        private System.Windows.Forms.Label labelProjeto;
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Trade_GP.Dao.postgre;
+using Trade_GP.DataBase;
 using Trade_GP.Models;
 
 namespace Trade_GP
@@ -27,6 +28,9 @@ namespace Trade_GP
 
         private void FormLogin_Load(object sender, EventArgs e)
         {
+
+            labelProjeto.Text = RunCommand.ConfiguracoesMaster.master;
+
             LoadUsuarios();
 
             cbGrupo.SelectedIndex = 0;

@@ -435,18 +435,15 @@ namespace Trade_GP.Ipi.Forms
                 }
                 if (ImportacaoAsyncIPI.StaticLsErrosImportacao.Count == 0)
                 {
-                    if (result == null)
-                    {
+                 
 
-                        ImportacaoAsyncIPI.Cabecalho.Zerar();
+                    ImportacaoAsyncIPI.Cabecalho.Zerar();
 
-                        ImportacaoAsyncIPI.Cabecalho.Arquivo = FileName;
-                                               
-                    }
-                    else
-                    {
-                        ImportacaoAsyncIPI.Cabecalho = result;
-                    }
+                    ImportacaoAsyncIPI.Cabecalho.Arquivo = FileName;
+
+                    ImportacaoAsyncIPI.Cabecalhos.Zerar();
+
+
                     await ProcessaPlanilha(Path, FileName);
                 }
                 if (ImportacaoAsyncIPI.StaticLsErrosImportacao.Count > 0)

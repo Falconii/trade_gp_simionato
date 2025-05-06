@@ -603,7 +603,86 @@ namespace Trade_GP.Dao.postgre
             return lista;
         }
 
+        public List<ClienteByEmpLocal> getClienteByEmpLocalIPI(string Cod_Emp)
+        {
+            ClienteByEmpLocal obj = null;
+
+            string strStringConexao = DataBase.RunCommand.connectionString;
+
+            List<ClienteByEmpLocal> lista = new List<ClienteByEmpLocal>();
+
+            string strSelect = SqlClienteByEmpLocalIPI(Cod_Emp);
+
+            Console.WriteLine(strSelect);
+
+            using (var objConexao = new NpgsqlConnection(strStringConexao))
+            {
+                using (var objCommand = new NpgsqlCommand(strSelect, objConexao))
+                {
+                    try
+                    {
+                        objConexao.Open();
+
+                        var objDataReader = objCommand.ExecuteReader();
+
+                        if (objDataReader.HasRows)
+                        {
+
+                            while (objDataReader.Read())
+                            {
+
+                                obj = new ClienteByEmpLocal();
+
+                                obj = PopulaClienteByEmpLocal(objDataReader);
+
+                                lista.Add(obj);
+
+                            }
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                    finally
+                    {
+                        objConexao.Close();
+                    }
+                }
+            }
+
+            return lista;
+        }
+
         private string SqlClienteByEmpLocal(string Cod_Empresa)
+        {
+            string Where = "";
+
+            string OrderBy = "";
+
+            string strSelect = "SELECT  " +
+            "  cli.id_grupo " +
+            " , cli.empresa " +
+            " ,cli.cod_empresa " +
+            " ,cli.local " +
+            " ,cli.cnpj_cpf " +
+            " ,cli.razao " +
+            " FROM     clientes cli " +
+            "INNER JOIN cont_cab_proc proc on  proc.id_grupo = cli.id_grupo and proc.cod_emp = cli.cod_empresa and proc.local = cli.local ";
+            Where = $"WHERE    cli.cod_empresa = '{Cod_Empresa}'";
+
+            OrderBy = $"ORDER BY " +
+            "   cli.id_grupo " +
+            " , cli.cod_empresa " +
+            " , cli.local ";
+
+            strSelect += $" {Where} {OrderBy} ";
+
+            return strSelect;
+        }
+
+        private string SqlClienteByEmpLocalIPI(string Cod_Empresa)
         {
             string Where = "";
 

@@ -36,7 +36,7 @@ namespace Trade_GP.Models
         public void Zerar()
         {
             Id_Grupo = 1;
-            Id = 1;
+            Id = 0;
             Cod_Emp = "";
             Local = "";
             Cnpj_cpf = "";
