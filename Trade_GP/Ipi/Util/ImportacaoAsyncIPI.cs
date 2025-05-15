@@ -203,6 +203,15 @@ namespace Trade_GP.Ipi.Util
 
                             }
 
+                            if (!(TemIpiEQtd(fields)))
+                            {
+
+                                ContadorLinhas++;
+
+                                continue;
+
+                            }
+
 
                             populalsMoviDet(fields, fileName, ContadorLinhas);
 
@@ -287,7 +296,7 @@ namespace Trade_GP.Ipi.Util
                 {
                     ImportacaoAsyncIPI.StaticLsErrosImportacao.Add(new ErrosImportacao("E", fileName, $"{ContadorLinhas}", "Dt_Lanc", fields[11], 0, $"Converção Inválida!"));
                 }
-                Det.Cfop = fields[12].MaxLength(fileName, ContadorLinhas, "Cfop", 6);
+                Det.Cfop = fields[12].MaxLength(fileName, ContadorLinhas, "Cfop", 6).Substring(0,4);
                 try
                 {
                     if ("123".Contains(Det.Cfop.Substring(0, 1)))
@@ -354,6 +363,8 @@ namespace Trade_GP.Ipi.Util
                 Det.Id_Operacao = getOperacao(Det);
                 Det.Qtd_Convertida = 0;
                 Det.Fator = 1;
+                Det.Radical_Cnpj = Det.Cnpj_Cpf.Substring(0, 8);
+                Det.Compl_Cfop = fields[12].Substring(4, 2);
 
                 lsMoviDet.Add(Det);
 
@@ -458,7 +469,9 @@ namespace Trade_GP.Ipi.Util
                                         "Saldo_Inicial  ,    " +
                                         "qtd_convertida   ,   " +
                                         "fator  ,    " +
-                                        "etapa  " +
+                                        "etapa  , "  +
+                                        "radical_cnpj , " +
+                                        "compl_cfop  " +
                                         ") " +
                                         " VALUES ";
 
@@ -545,7 +558,9 @@ namespace Trade_GP.Ipi.Util
                                                             $"  {obj.Saldo_Inicial.DoubleParseDb()} , " +
                                                             $"  {obj.Qtd_Convertida.DoubleParseDb()} , " +
                                                             $"  {obj.Fator.DoubleParseDb()} , " +
-                                                            $"  0  " +
+                                                            $"  0 , " + 
+                                                            $"  '{obj.Radical_Cnpj}' , " +
+                                                            $"  '{obj.Compl_Cfop}'  " +
                                                         " ) ";
                         }
                         catch (Exception e)
@@ -821,6 +836,18 @@ namespace Trade_GP.Ipi.Util
             retorno = (FiltroIPI.Contains(cfop.Substring(0, 4)));
 
             return retorno;
+        }
+
+        private static bool TemIpiEQtd(List<string> fields)
+        {
+
+            Double Quantidade_1 = fields[20].DoubleParse();
+
+            Double Ipi_Vlr = fields[37].DoubleParse();
+
+            if ((Quantidade_1 <= 0)) return false;
+
+            return true;
         }
 
         private static string getOperacao(NfeDetTrade det)

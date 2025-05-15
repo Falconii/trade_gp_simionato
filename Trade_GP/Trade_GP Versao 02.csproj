@@ -473,6 +473,9 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Ipi\Scripts\Banco\Banco De Dados.sql" />
+    <Content Include="Ipi\Scripts\Banco\tabelas.sql" />
+    <Content Include="Ipi\Scripts\rotinas para calculor qtd ipi.sql" />
     <Content Include="Script\Apoio2\Acumulado CFOP.sql" />
     <Content Include="Script\Apoio2\Adaptação Novo Calculo.sql" />
     <Content Include="Script\Apoio2\gerar acumulado.sql" />

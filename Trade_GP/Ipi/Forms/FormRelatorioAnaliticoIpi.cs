@@ -80,8 +80,7 @@ namespace Trade_GP.Ipi.Forms
             public string Local { get; set; }
             public string Ano { get; set; }
             public string Mes { get; set; }
-            public string Periodo { get; set; }
-            public string Data { get; set; }
+            public string arquivo { get; set; }
             public DateTime? Inicial { get; set; }
             public DateTime? Final { get; set; }
             public string Observacao { get; set; }
@@ -302,11 +301,101 @@ namespace Trade_GP.Ipi.Forms
                 }
             }
         }
-        private void btProcessar_Click(object sender, EventArgs e)
+        private async void btProcessar_Click(object sender, EventArgs e)
         {
-            status_processando();
+            if ((int)btProcessar.Tag == 0) // Processamento
+            {
 
-            NewTarefas();
+                if (!Directory.Exists(tbFolder.Text))
+                {
+                    MessageBox.Show("Pasta Para Gravação Dos Relários Inválida!");
+
+                    return;
+                }
+
+                Cancelar = false;
+
+                status_processando();
+
+                int resultado = -1;
+
+                DateTime tempoInicial = DateTime.Now;
+
+                int resultado_total = 0;
+
+                NewTarefas();
+
+                foreach (var (tar, index) in lsTarefas.Select((tar, index) => (tar, index)))
+                {
+                    tar.Inicial = DateTime.Now;
+
+                    await Task.Run(async delegate
+                    {
+                        await Task.Delay(3000);
+                    });
+
+                    tar.Final = DateTime.Now;
+
+                    TimeSpan tempoDia = (TimeSpan)(tar.Final - tar.Inicial);
+
+                    string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}", tempoDia.Hours, tempoDia.Minutes, tempoDia.Seconds);
+
+                    tar.Status = $"Tempo Gasto {elapsedTime}";
+
+                    tar.Observacao = $"Processamento Encerrado!";
+
+                    if (Cancelar)
+                    {
+                        tar.Observacao = "Cancelamento Solicitado !";
+                    }
+
+                    dtGridLog.InvalidateRow(index);
+
+                    if (Cancelar) break;
+
+                }
+
+                status_terminado();
+
+                DateTime tempoFinal = DateTime.Now;
+
+                TimeSpan tempo = (TimeSpan)(tempoFinal - tempoInicial);
+
+                string tempoDecorrido = String.Format("{0:00}:{1:00}:{2:00}", tempo.Hours, tempo.Minutes, tempo.Seconds);
+
+                MessageBox.Show($"Tempo Decorrido Total : {tempoDecorrido}");
+
+                return;
+            }
+            if ((int)btProcessar.Tag == 1) // Cancelamento
+            {
+                DialogResult resposta = MessageBox.Show("Impressão Dos Relatorios Será Interrompida. Concorda ? ", "Atenção!",
+                  MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (resposta == DialogResult.Yes)
+                {
+
+                    Cancelar = true;
+
+                    status_aguardando_cancelar();
+                }
+                else
+                {
+
+                    Cancelar = false;
+
+                    status_processando();
+
+                }
+
+                return;
+            }
+            if ((int)btProcessar.Tag == 2) // Voltar Ao Processamento
+            {
+                Cancelar = false;
+
+                status_processando();
+
+            }
         }
 
         private void NewTarefas()
@@ -317,20 +406,21 @@ namespace Trade_GP.Ipi.Forms
 
             string Mes = "";
 
+            int Indice = 1;
+
             if (cbLocal.SelectedIndex == 1)
             {
                 tarefa obj = new tarefa()
                 {
-                    Sequencia = 0,
+                    Sequencia = Indice++,
                     Cod_Emp = Parametros[0].Cod_Emp,
                     Local = "",
-                    Ano =  "",
+                    Ano = "",
                     Mes = "",
-                    Periodo = "",//$"{filtro.Mes.ToString("D2")}/{filtro.Ano.ToString("D2")}",
-                    Data = "",//filtro.dt_ref.ToString("dd/MM/yyyy"),
+                    arquivo = $"{ Parametros[0].Cod_Emp}.cvs",
                     Inicial = null,
                     Final = null,
-                    Observacao = $"{Parametros[0].Cod_Emp}",
+                    Observacao = "",
                     Status = "Aguardando"
                 };
                 lsTarefas.Add(obj);
@@ -343,23 +433,54 @@ namespace Trade_GP.Ipi.Forms
                     {
                         tarefa obj = new tarefa()
                         {
-                            Sequencia = 0,
+                            Sequencia = Indice++,
                             Cod_Emp = parametro.Cod_Emp,
-                            Local   = parametro.Local,
+                            Local = parametro.Local,
                             Ano = "",
                             Mes = "",
-                            Periodo = "",//$"{filtro.Mes.ToString("D2")}/{filtro.Ano.ToString("D2")}",
-                            Data = "",//filtro.dt_ref.ToString("dd/MM/yyyy"),
+                            arquivo = $"{parametro.Cod_Emp}_{parametro.Local}.cvs",
                             Inicial = null,
                             Final = null,
-                            Observacao = $"{Cod_Emp} {Local}",
+                            Observacao = "",
                             Status = "Aguardando"
                         };
                         lsTarefas.Add(obj);
                     }
                     if (cbLocal.SelectedIndex == 0 && cbAno.SelectedIndex == 0 && cbMes.SelectedIndex == 1)
                     {
-                        foreach (var (periodo, index2) in parametro.Periodos.Select((periodo, index2) => (periodo, index2)))
+                        foreach ((Periodo periodo, int index2) in parametro.Periodos
+                                .GroupBy(p => p.Data.Substring(3,4)) // Agrupa pelo campo Data
+                                .Select(group => group.First()) // Pega o primeiro item de cada grupo
+                                .Select((periodo, index2) => (periodo, index2))) // Adiciona o índice
+                        {
+
+                            Mes = cbMes.SelectedIndex == 0 ? $"_{periodo.Data.Split('/')[0]}" : "";
+
+                            Ano = $"_{periodo.Data.Split('/')[1]}";
+
+
+                            tarefa obj = new tarefa()
+                            {
+                                Sequencia = Indice++,
+                                Cod_Emp = parametro.Cod_Emp,
+                                Local = parametro.Local,
+                                Ano = periodo.Data.Split('/')[1],
+                                arquivo = $"{parametro.Cod_Emp}_{parametro.Local}{Ano}{Mes}.cvs",
+                                Inicial = null,
+                                Final = null,
+                                Observacao = "",
+                                Status = "Aguardando"
+                            };
+                            lsTarefas.Add(obj);
+                        }
+
+                    }
+                    if (cbLocal.SelectedIndex == 0 && cbAno.SelectedIndex == 0 && cbMes.SelectedIndex == 0)
+                    {
+                        foreach ((Periodo periodo, int index2) in parametro.Periodos
+                                .GroupBy(p => (p.Data.Substring(3, 4), p.Data.Substring(0, 2)))
+                                .Select(group => group.First()) // Pega o primeiro item de cada grupo
+                                .Select((periodo, index2) => (periodo, index2))) // Adiciona o índice
                         {
 
                             Mes = cbMes.SelectedIndex == 0 ? $"_{periodo.Data.Split('/')[0]}" : "";
@@ -367,29 +488,28 @@ namespace Trade_GP.Ipi.Forms
                             Ano = $"_{periodo.Data.Split('/')[1]}";
 
                             Console.WriteLine($"{parametro.Cod_Emp}_{parametro.Local}{Ano}{Mes}");
-                        
+
                             tarefa obj = new tarefa()
                             {
-                                Sequencia = index2,
+                                Sequencia = Indice++,
                                 Cod_Emp = parametro.Cod_Emp,
                                 Local = parametro.Local,
-                                Ano = "",
-                                Mes = "",
-                                Periodo = "",//$"{filtro.Mes.ToString("D2")}/{filtro.Ano.ToString("D2")}",
-                                Data = "",//filtro.dt_ref.ToString("dd/MM/yyyy"),
+                                Ano = periodo.Data.Split('/')[1],
+                                Mes = periodo.Data.Split('/')[0],
+                                arquivo = $"{parametro.Cod_Emp}_{parametro.Local}{Ano}{Mes}.cvs",
                                 Inicial = null,
                                 Final = null,
-                                Observacao = $"{Cod_Emp} {Local}",
+                                Observacao = "",
                                 Status = "Aguardando"
                             };
                             lsTarefas.Add(obj);
+                        }
+
                     }
-                                           
                 }
             }
             LoadDbGridLog();
         }
-
         private void LoadDbGridLog()
         {
 
@@ -408,23 +528,32 @@ namespace Trade_GP.Ipi.Forms
             dtGridLog.Columns[00].HeaderText = "Seq";
             dtGridLog.Columns[00].Width = 50;
             dtGridLog.Columns[00].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dtGridLog.Columns[01].HeaderText = "mês/ano";
+            dtGridLog.Columns[01].HeaderText = "Emp";
             dtGridLog.Columns[01].Width = 80;
             dtGridLog.Columns[01].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dtGridLog.Columns[02].HeaderText = "dia";
+            dtGridLog.Columns[02].HeaderText = "Local";
             dtGridLog.Columns[02].Width = 80;
-            dtGridLog.Columns[02].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dtGridLog.Columns[03].HeaderText = "Inicio";
-            dtGridLog.Columns[03].Width = 120;
+            dtGridLog.Columns[02].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; 
+            dtGridLog.Columns[03].HeaderText = "Ano";
+            dtGridLog.Columns[03].Width = 80;
             dtGridLog.Columns[03].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dtGridLog.Columns[04].HeaderText = "Final";
-            dtGridLog.Columns[04].Width = 120;
+            dtGridLog.Columns[04].HeaderText = "Mês";
+            dtGridLog.Columns[04].Width = 80;
             dtGridLog.Columns[04].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dtGridLog.Columns[05].HeaderText = "Observação";
-            dtGridLog.Columns[05].Width = 180;
-            dtGridLog.Columns[05].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dtGridLog.Columns[06].HeaderText = "Status";
-            dtGridLog.Columns[06].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dtGridLog.Columns[05].HeaderText = "Arquivo";
+            dtGridLog.Columns[05].Width = 120;
+            dtGridLog.Columns[05].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dtGridLog.Columns[06].HeaderText = "Inicio";
+            dtGridLog.Columns[06].Width = 120;
+            dtGridLog.Columns[06].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dtGridLog.Columns[07].HeaderText = "Final";
+            dtGridLog.Columns[07].Width = 120;
+            dtGridLog.Columns[07].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dtGridLog.Columns[08].HeaderText = "Observação";
+            dtGridLog.Columns[08].Width = 180;
+            dtGridLog.Columns[08].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dtGridLog.Columns[09].HeaderText = "Status";
+            dtGridLog.Columns[09].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
             dtGridLog.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
             dtGridLog.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -444,6 +573,12 @@ namespace Trade_GP.Ipi.Forms
                 String stringValue = ((DateTime)e.Value).ToString("dd-MM-yyyy hh:mm:ss");
                 e.Value = stringValue;
             }
+        }
+
+        private void btNovo_Click(object sender, EventArgs e)
+        {
+            recomeco();
+            status_processado();
         }
     }
 }

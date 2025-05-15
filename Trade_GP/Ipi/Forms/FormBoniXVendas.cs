@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -385,6 +386,9 @@ namespace Trade_GP.Ipi.Forms
         {
             if ((int)btProcessar.Tag == 0) // Processamento
             {
+
+             
+
                 Cancelar = false;
 
                 lblProcesso.Text = "Iniciando Processo!";

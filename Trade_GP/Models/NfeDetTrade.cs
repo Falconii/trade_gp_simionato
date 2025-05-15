@@ -72,8 +72,10 @@ namespace Trade_GP.Models
         public double Fator { get; set; }
         public int Boni_Planilha { get; set; }
         public int Boni_Linha { get; set; }
+        public string Radical_Cnpj { get; set; }
+        public string Compl_Cfop { get; set; }
 
-        public NfeDetTrade(int id_Grupo, int id_Planilha, string id_Operacao, int nro_Linha, string cod_Emp, string local, string id_Parc, string cnpj_Cpf, string nome, string uF, string chave_Acesso, string nro_Doc, string nro_Item, string nro_Posicao, DateTime dt_Doc, DateTime dt_Lanc, DateTime dt_Ref, string cfop, string origem, string sit_Trib, string material, string tp_Aval, string cod_Controle, string denom, string unid, double quantidade_1, double quantidade_2, double qtd_Conv, double preco_Liq, double liquido, double valor, double vlr_Contb, double pIS_Base, string stPis, double pis_Taxa, double pis_Vlr, string stCof, double cof_Base, double cof_Taxa, double cof_Vlr, double ipi_Base, double ipi_Taxa, double ipi_Vlr, double icms_Base, double icms_Taxa, double icms_Vlr, double fecp_Vlr, double icst_Base, double icst_Taxa, double icst_Valor, double fest_Valor, double bc_Icms_Rt, double vlr_Icms_Str, double vlr_Fcps_St_Rt, string doc_Origem, string item_Ref, double saldo, double sobra, string status, string layout, double qtd_Dev, int id_Saida, int nro_Linha_Saida, double saldo_Inicial, double qtd_Convertida, double fator, int boni_Planilha, int boni_Linha)
+        public NfeDetTrade(int id_Grupo, int id_Planilha, string id_Operacao, int nro_Linha, string cod_Emp, string local, string id_Parc, string cnpj_Cpf, string nome, string uF, string chave_Acesso, string nro_Doc, string nro_Item, string nro_Posicao, DateTime dt_Doc, DateTime dt_Lanc, DateTime dt_Ref, string cfop, string origem, string sit_Trib, string material, string tp_Aval, string cod_Controle, string denom, string unid, double quantidade_1, double quantidade_2, double qtd_Conv, double preco_Liq, double liquido, double valor, double vlr_Contb, double pIS_Base, string stPis, double pis_Taxa, double pis_Vlr, string stCof, double cof_Base, double cof_Taxa, double cof_Vlr, double ipi_Base, double ipi_Taxa, double ipi_Vlr, double icms_Base, double icms_Taxa, double icms_Vlr, double fecp_Vlr, double icst_Base, double icst_Taxa, double icst_Valor, double fest_Valor, double bc_Icms_Rt, double vlr_Icms_Str, double vlr_Fcps_St_Rt, string doc_Origem, string item_Ref, double saldo, double sobra, string status, string layout, double qtd_Dev, int id_Saida, int nro_Linha_Saida, double saldo_Inicial, double qtd_Convertida, double fator, int boni_Planilha, int boni_Linha, string radical_Cnpj, string compl_Cfop)
         {
             Id_Grupo = id_Grupo;
             Id_Planilha = id_Planilha;
@@ -143,6 +145,8 @@ namespace Trade_GP.Models
             Fator = fator;
             Boni_Planilha = boni_Planilha;
             Boni_Linha = boni_Linha;
+            Radical_Cnpj = radical_Cnpj;
+            Compl_Cfop = compl_Cfop;
         }
 
         public NfeDetTrade()
@@ -219,6 +223,8 @@ namespace Trade_GP.Models
             Fator = 0;
             Boni_Planilha = 0;
             Boni_Linha = 0;
+            Radical_Cnpj = "";
+            Compl_Cfop = "";
         }
 }
 }

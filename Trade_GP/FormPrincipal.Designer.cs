@@ -56,11 +56,11 @@ namespace Trade_GP
             this.atualizaçãoVrlEconômicoSELICToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.importaçãoIPI = new System.Windows.Forms.ToolStripMenuItem();
             this.importaçãoTXTIpiClick = new System.Windows.Forms.ToolStripMenuItem();
-            this.RelatorioIPI = new System.Windows.Forms.ToolStripMenuItem();
-            this.RelatorioAnaliticoIPI = new System.Windows.Forms.ToolStripMenuItem();
             this.ProcessamentoIpi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            this.RelatorioIPI = new System.Windows.Forms.ToolStripMenuItem();
+            this.RelatorioAnaliticoIPI = new System.Windows.Forms.ToolStripMenuItem();
             this.menuJanelas = new System.Windows.Forms.ToolStripMenuItem();
             this.sobreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
@@ -287,21 +287,6 @@ namespace Trade_GP
             this.importaçãoTXTIpiClick.Text = "Importação TXT Ipi";
             this.importaçãoTXTIpiClick.Click += new System.EventHandler(this.importaçãoTXTIpiClick_Click);
             // 
-            // RelatorioIPI
-            // 
-            this.RelatorioIPI.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.RelatorioAnaliticoIPI});
-            this.RelatorioIPI.Name = "RelatorioIPI";
-            this.RelatorioIPI.Size = new System.Drawing.Size(110, 24);
-            this.RelatorioIPI.Text = "Relatorios IPI";
-            // 
-            // RelatorioAnaliticoIPI
-            // 
-            this.RelatorioAnaliticoIPI.Name = "RelatorioAnaliticoIPI";
-            this.RelatorioAnaliticoIPI.Size = new System.Drawing.Size(224, 26);
-            this.RelatorioAnaliticoIPI.Text = "Relatório Analitico";
-            this.RelatorioAnaliticoIPI.Click += new System.EventHandler(this.RelatorioAnaliticoIPI_Click);
-            // 
             // ProcessamentoIpi
             // 
             this.ProcessamentoIpi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -316,12 +301,28 @@ namespace Trade_GP
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
             this.toolStripMenuItem5.Size = new System.Drawing.Size(278, 26);
             this.toolStripMenuItem5.Text = "Cruzamento Bonif. X Vendas";
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.cruzamentoBonifXVendas_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
             this.toolStripMenuItem6.Size = new System.Drawing.Size(278, 26);
             this.toolStripMenuItem6.Text = "Valor Econômico IPI";
+            // 
+            // RelatorioIPI
+            // 
+            this.RelatorioIPI.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RelatorioAnaliticoIPI});
+            this.RelatorioIPI.Name = "RelatorioIPI";
+            this.RelatorioIPI.Size = new System.Drawing.Size(110, 24);
+            this.RelatorioIPI.Text = "Relatorios IPI";
+            // 
+            // RelatorioAnaliticoIPI
+            // 
+            this.RelatorioAnaliticoIPI.Name = "RelatorioAnaliticoIPI";
+            this.RelatorioAnaliticoIPI.Size = new System.Drawing.Size(216, 26);
+            this.RelatorioAnaliticoIPI.Text = "Relatório Analitico";
+            this.RelatorioAnaliticoIPI.Click += new System.EventHandler(this.RelatorioAnaliticoIPI_Click);
             // 
             // menuJanelas
             // 

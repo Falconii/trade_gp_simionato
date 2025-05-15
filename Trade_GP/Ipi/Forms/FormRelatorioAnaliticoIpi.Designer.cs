@@ -243,6 +243,7 @@ namespace Trade_GP.Ipi.Forms
             this.btNovo.Tag = "0";
             this.btNovo.Text = "Novo Processamento";
             this.btNovo.UseVisualStyleBackColor = true;
+            this.btNovo.Click += new System.EventHandler(this.btNovo_Click);
             // 
             // btProcessar
             // 
