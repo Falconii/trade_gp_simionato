@@ -275,6 +275,9 @@ CREATE TABLE public.controle_e  (
     flag            char(1) default ' ',
     metodo_qtd      char(1) default ' ',
     metodo_pesquisa char(1) default ' ',
+    perc_boni       numeric(7,2) default 0,
+    perc_ven        numeric(7,2) default 0,
+    dias            int4,
 	PRIMARY KEY(id_grupo,id_fechamento,id_s,nro_linha_s,id_e,nro_linha_e)
 )
 WITHOUT OIDS 

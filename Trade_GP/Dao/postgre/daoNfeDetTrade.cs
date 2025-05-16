@@ -1875,6 +1875,46 @@ namespace Trade_GP.Dao.postgre
 
         }
 
+        //Rotinas IPI
+
+        public async Task<int> bonixvenda_periodo(int id_grupo, string cod_emp, string local, string periodo)
+        {
+            // Defina a string de conexão. Atualize com as informações do seu banco de dados.
+            string connString = DataBase.RunCommand.connectionString;
+
+
+            String StringProc = $"select * from bonixvenda_periodo({id_grupo},'{cod_emp}','{local}','{periodo}',1) ";
+            
+            int _saida = 0;
+
+            using (var conn = new NpgsqlConnection(connString))
+            {
+                try
+                {
+                    // Abra a conexão
+                    await conn.OpenAsync();
+                    Console.WriteLine("Conexão aberta com sucesso!");
+
+                    // Chame a função calculo_saldo() de forma assíncrona
+                    _saida = await calculo_saldoAsync(conn, StringProc);
+
+                    Console.WriteLine("Saldo calculado: " + _saida);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Erro ao abrir a conexão: " + ex.Message);
+                }
+                finally
+                {
+                    // Feche a conexão
+                    await conn.DisposeAsync();
+                    Console.WriteLine("Conexão fechada com sucesso!");
+                }
+            }
+
+            return _saida;
+        }
+
     }
 }
 

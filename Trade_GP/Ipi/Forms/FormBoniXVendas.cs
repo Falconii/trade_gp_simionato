@@ -406,8 +406,7 @@ namespace Trade_GP.Ipi.Forms
 
                 foreach (var (par, indexPar) in Parametros.Select((tar, indexPar) => (tar, indexPar)))
                 {
-                    //getMeses();
-
+                   
                     DateTime tempoLocalInicial = DateTime.Now;
 
                     getMesesX(par.Local);
@@ -729,8 +728,7 @@ namespace Trade_GP.Ipi.Forms
                 });
                 try
                 {
-
-                    _saida = await daoDet.Saldosv2X(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
+                    _saida = await daoDet.bonixvenda_periodo(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
                     // Simula Processamento
                     // await Task.Run(async delegate
                     // {
