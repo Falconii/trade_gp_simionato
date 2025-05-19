@@ -702,7 +702,11 @@ namespace Trade_GP.Ipi.Forms
 
             string Periodo = "";
 
-            int _saida = 0;
+            int _saida_nota = 0;
+
+            int _saida_periodo = 0;
+
+            int _saida_total_dia = 0;
 
             int _total_notas = 0;
 
@@ -728,12 +732,17 @@ namespace Trade_GP.Ipi.Forms
                 });
                 try
                 {
-                    _saida = await daoDet.bonixvenda_periodo(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
-                    // Simula Processamento
-                    // await Task.Run(async delegate
-                    // {
-                    //     await Task.Delay(1000);
-                    // });
+
+                    _saida_nota = await daoDet.bonixvenda_nota(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
+
+                    await Task.Run(async delegate
+                    {
+                        await Task.Delay(200);
+                    });
+
+                    _saida_periodo      = await daoDet.bonixvenda_periodo(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
+
+                    _saida_total_dia    = _saida_nota + _saida_periodo;
 
                 }
                 catch (Exception ex)
@@ -749,9 +758,9 @@ namespace Trade_GP.Ipi.Forms
 
                 tar.Status = $"Processado {elapsedTime}";
 
-                tar.Observacao = $"Total De Notas {_saida}";
+                tar.Observacao = $"Total NOTAS: {_saida_nota} PERIODO: {_saida_periodo} GERAL: {_saida_total_dia}";
 
-                _total_notas += _saida;
+                _total_notas += _saida_total_dia;
 
                 if (Cancelar)
                 {

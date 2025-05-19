@@ -16,12 +16,15 @@ AS $function$ DECLARE
         __qtd_usada     numeric(15,4);
         
         __total_operacao numeric(15,4);
-        
+       
         __perc_bon       numeric(15,4);
+        
+        __perc_ven       numeric(15,4);
         
         __metodo_qtd     text;
         
         __metodo_pesquisa text;
+
         
         BEGIN
 
@@ -93,7 +96,10 @@ AS $function$ DECLARE
                     
                       RAISE NOTICE 'Venda % Bonif. % Perc.  % Qtd Aproveitada %' , __qtd_venda, tempo.saldo, __perc_bon, __qtd_usada;
                                
-                      INSERT INTO controle_e(id_grupo,id_fechamento,id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e,metodo_qtd,metodo_pesquisa) 
+                      INSERT INTO controle_e(id_grupo,id_fechamento,id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e,metodo_qtd,metodo_pesquisa,perc_boni,perc_ven,dias) VALUES
+                      (_id_grupo,_id_fechamento,_id_s, _nro_linha_s,vendas.id_planilha , vendas.nro_linha, _saldo_f, _qtd,__metodo_qtd,__metodo_pesquisa,__perc_bon,__perc_ven,__dias);
+  
+                      INSERT INTO controle_e(id_grupo,id_fechamento,id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e,metodo_qtd,metodo_pesquisa,perc_boni,perc_ven,0) 
                       VALUES(_id_grupo,_id_fechamento,tempo.id_planilha,tempo.nro_linha, __id_planilha_v, __nro_linha_v, 0, __qtd_usada,__metodo_qtd,__metodo_pesquisa);
                       
                       if (__saldo_f = 0) then

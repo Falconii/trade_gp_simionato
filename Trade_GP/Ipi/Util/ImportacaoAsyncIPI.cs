@@ -845,7 +845,6 @@ namespace Trade_GP.Ipi.Util
 
             Double Ipi_Vlr = fields[37].DoubleParse();
 
-            if ((Quantidade_1 <= 0)) return false;
 
             return true;
         }

@@ -11,8 +11,6 @@ select * from bonixvenda_periodo(1,1004,0010,10/12/2018,1)
 
 select * from controle_e
 
-8666111757
-
 select  bon.cnpj_cpf as cnpj_boni
        ,ven.cnpj_cpf as cnpj_venda
        ,bon.local
