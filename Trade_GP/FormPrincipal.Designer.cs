@@ -283,7 +283,7 @@ namespace Trade_GP
             // importaçãoTXTIpiClick
             // 
             this.importaçãoTXTIpiClick.Name = "importaçãoTXTIpiClick";
-            this.importaçãoTXTIpiClick.Size = new System.Drawing.Size(219, 26);
+            this.importaçãoTXTIpiClick.Size = new System.Drawing.Size(224, 26);
             this.importaçãoTXTIpiClick.Text = "Importação TXT Ipi";
             this.importaçãoTXTIpiClick.Click += new System.EventHandler(this.importaçãoTXTIpiClick_Click);
             // 
@@ -308,6 +308,7 @@ namespace Trade_GP
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
             this.toolStripMenuItem6.Size = new System.Drawing.Size(278, 26);
             this.toolStripMenuItem6.Text = "Valor Econômico IPI";
+            this.toolStripMenuItem6.Click += new System.EventHandler(this.toolStripMenuItem6_Click);
             // 
             // RelatorioIPI
             // 

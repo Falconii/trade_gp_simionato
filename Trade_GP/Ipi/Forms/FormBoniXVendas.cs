@@ -183,7 +183,6 @@ namespace Trade_GP.Ipi.Forms
             btProximo.Enabled = btProximoFlag;
             lblLocalPeriodo.Text = "";
         }
-
         private class tarefa
         {
             public int Sequencia { get; set; }

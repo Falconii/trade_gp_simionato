@@ -420,5 +420,19 @@ namespace Trade_GP
 
             form.Show();
         }
+
+        private void toolStripMenuItem6_Click(object sender, EventArgs e)
+        {
+
+            FormValorizaçãoIpi form = new FormValorizaçãoIpi();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
     }
 }
