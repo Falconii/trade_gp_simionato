@@ -133,6 +133,7 @@ CREATE TABLE public.Nfe_Det_Trade  (
             etapa           int4          NOT NULL default 0,
             radical_cnpj    char(8) NOT NULL default '',
             compl_cfop      char(2) NOT NULL default '',
+            bebida          char(1) NOT NULL DEFAULT '',
  	PRIMARY KEY(id_grupo,id_planilha,nro_linha)
 )
 WITHOUT OIDS 
@@ -353,6 +354,31 @@ add column vlr_economico_cofins_pauta              numeric(18,4) not null defaul
 add column vlr_economico_pis_corrigido_pauta       numeric(18,4) not null default 0,
 add column vlr_economico_cofins_corrigido_pauta    numeric(18,4) not null default 0;   
 */
+
+
+DROP TABLE IF EXISTS nfe_det_trade_val_ipi;
+CREATE TABLE public.nfe_det_trade_val_ipi  ( 
+    id_grupo                        int4 NOT NULL,
+	id                            	int4 NOT NULL,
+	nro_linha                     	int4 NOT NULL,
+    id_planilha_entrada             int4 NOT NULL,
+    nro_linha_entrada               int4 NOT NULL,
+	dtnfe                         	date NOT NULL,
+	dtcredito                     	date NULL,
+	vlr_economico_ipi             	numeric(18,4) NULL,
+	dtfcorrecao                   	date NULL,
+	vlr_economico_ipi_corrigido   	numeric(18,4) NULL,
+	taxa                          	numeric(7,2) NULL,
+    ipi_unit                        numeric(15,4) NULL,
+    qtd_calculada                   numeric(15,4) NULL,
+	usuarioinclusao               	int4 NULL,
+	usuarioatualizacao            	int4 NULL,
+	PRIMARY KEY(id_grupo,id,nro_linha,id_planilha_entrada,nro_linha_entrada)
+)
+WITHOUT OIDS 
+TABLESPACE "Producao"
+GO
+
 
 DROP TABLE IF EXISTS cont_cab_proc;
 CREATE TABLE public.cont_cab_proc( 

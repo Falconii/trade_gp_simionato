@@ -11,7 +11,8 @@ CREATE OR REPLACE FUNCTION function_controle_nfe()
        _data    date;
     BEGIN
        IF  (TG_OP = 'INSERT') THEN
-           update nfe_det_trade set saldo = saldo - NEW.qtd_e, status = '1'  where id_grupo = NEW.id_grupo and id_planilha = NEW.id_e and nro_linha = NEW.nro_linha_e;
+           //update nfe_det_trade set saldo = saldo - NEW.qtd_e, status = '1'  where id_grupo = NEW.id_grupo and id_planilha = NEW.id_e and nro_linha = NEW.nro_linha_e;
+           update nfe_det_trade set saldo = 0, status = '1'  where id_grupo = NEW.id_grupo and id_planilha = NEW.id_e and nro_linha = NEW.nro_linha_e;
            RETURN NEW;
        END IF;
        RETURN NEW;

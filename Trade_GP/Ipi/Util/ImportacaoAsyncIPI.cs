@@ -212,6 +212,15 @@ namespace Trade_GP.Ipi.Util
 
                             }
 
+                            if (!(NcmValido(fields)))
+                            {
+
+                                ContadorLinhas++;
+
+                                continue;
+
+                            }
+
 
                             populalsMoviDet(fields, fileName, ContadorLinhas);
 
@@ -256,10 +265,11 @@ namespace Trade_GP.Ipi.Util
 
         private static void populalsMoviDet(List<string> fields, string fileName, int ContadorLinhas)
         {
-
+            string bebida = "";
             try
             {
                 NfeDetTrade Det = new NfeDetTrade();
+
 
 
                 Det.Id_Grupo = Cabecalho.Id_Grupo;
@@ -366,6 +376,21 @@ namespace Trade_GP.Ipi.Util
                 Det.Radical_Cnpj = Det.Cnpj_Cpf.Substring(0, 8);
                 Det.Compl_Cfop = fields[12].Substring(4, 2);
 
+                bebida = "N";
+
+                if (Det.Cod_Controle.Substring(0, 2) == "22")
+                {
+                    if (Det.Cod_Controle.Substring(0, 4) == "2207")
+                    {
+                       bebida = "N";
+                    } else
+                    {
+                       bebida = "S";
+                    }
+                }
+
+                Det.Bebida = bebida;
+
                 lsMoviDet.Add(Det);
 
                 Cabecalho.Qtd += Det.Quantidade_1;
@@ -471,7 +496,8 @@ namespace Trade_GP.Ipi.Util
                                         "fator  ,    " +
                                         "etapa  , "  +
                                         "radical_cnpj , " +
-                                        "compl_cfop  " +
+                                        "compl_cfop , " +
+                                        "bebida " +
                                         ") " +
                                         " VALUES ";
 
@@ -560,7 +586,8 @@ namespace Trade_GP.Ipi.Util
                                                             $"  {obj.Fator.DoubleParseDb()} , " +
                                                             $"  0 , " + 
                                                             $"  '{obj.Radical_Cnpj}' , " +
-                                                            $"  '{obj.Compl_Cfop}'  " +
+                                                            $"  '{obj.Compl_Cfop}' , " +
+                                                            $"  '{obj.Bebida}'  " +
                                                         " ) ";
                         }
                         catch (Exception e)
@@ -845,6 +872,23 @@ namespace Trade_GP.Ipi.Util
 
             Double Ipi_Vlr = fields[37].DoubleParse();
 
+            if ((Quantidade_1 <= 0) || (Ipi_Vlr <= 0))
+            {
+                return false;
+            } 
+
+            return true;
+        }
+   
+        private static bool NcmValido(List<string> fields)
+        {
+
+            string  Ncm = fields[17];
+
+            if ((Ncm.Length < 2) || Ncm is null)
+            {
+                return false;
+            }
 
             return true;
         }
@@ -856,6 +900,7 @@ namespace Trade_GP.Ipi.Util
             if (det.Cfop.Substring(0,4) == "5910" || det.Cfop.Substring(0,4) == "6910")
             {
                 retorno = "B";
+
             } else
             {
                 retorno = "V";
@@ -863,8 +908,6 @@ namespace Trade_GP.Ipi.Util
 
             return retorno;
         }
-
-
 
         private static void populalsMoviDets(List<string> fields, string fileName, int ContadorLinhas, List<ContDetProc> lsMoviDets)
         {

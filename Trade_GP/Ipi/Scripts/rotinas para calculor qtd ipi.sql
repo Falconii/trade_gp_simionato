@@ -26,6 +26,16 @@ AS $function$ DECLARE
         __metodo_pesquisa text;
         
         __dias Int4;
+
+        __ipi_unit      numeric(15,4);
+            
+        __ipi_economico numeric(15,4);
+
+        __ipi_economico_corrigido numeric(15,4);
+
+        __taxa  numeric(6,2);
+ 
+        __total_intercompany int4;
         
         BEGIN
 
@@ -38,7 +48,17 @@ AS $function$ DECLARE
           __metodo_pesquisa := 'N';
 
           __dias := 0;
-          
+
+          __total_intercompany := 0;
+
+          __ipi_unit := 0;
+            
+          __ipi_economico := 0;
+
+          __ipi_economico_corrigido := 0;
+
+          SELECT get_selic FROM into __taxa get_selic( cast(SUBSTRING(_dia_mes_ano,7,4) AS INT4), cast(SUBSTRING(to_char(dt_ref,'MM'),4,2) AS INT4) ,2025,03) ;
+                             
           FOR tempo in  
      
             SELECT  det.id_grupo     ,
@@ -53,7 +73,8 @@ AS $function$ DECLARE
                     det.material     ,
                     det.quantidade_1 ,
                     det.saldo        ,
-                    det.radical_cnpj 
+                    det.radical_cnpj ,
+                    det.vlr_ipi    
               FROM   nfe_det_trade DET
               WHERE  DET.id_grupo = _id_grupo and DET.cod_emp = _cod_emp and DET.local = _local  and det.id_operacao = 'B' and to_char(det.dt_ref,'DD/MM/YYYY') = _dia_mes_ano and det.status = '0' and det.saldo > 0
               ORDER BY det.id_grupo,det.cod_emp,det.local,DET.dt_ref , DET.id_operacao desc ,DET.nro_doc,DET.nro_item 
@@ -61,62 +82,84 @@ AS $function$ DECLARE
               LOOP      
                      __saldo_f   := tempo.saldo; 
                      __qtd_venda := 0;
-                    //Dentro da nota
-                    select coalesce(nota.id_planilha,0),
-                           coalesce(nota.nro_linha,0),
-                           coalesce(nota.saldo,0) 
-                    into   __id_planilha_v,__nro_linha_v,__qtd_venda
-                    from   nfe_det_trade bon
-                    inner join clientes cli on cli.cod_empresa = bon.cod_emp and cli.local = bon.local
-                    inner join nfe_det_trade nota on 
-                              nota.id_grupo = bon.id_grupo and bon.cod_emp = nota.cod_emp and bon.local = nota.local 
-                              and  nota.id_operacao = 'V' and nota.status = '0'  and nota.dt_ref = bon.dt_ref and bon.material = nota.material and  nota.saldo > 0 
-                              and  nota.nro_doc = bon.nro_doc  and nota.ipi_vlr > 0
-                    where  bon.id_grupo = _id_grupo and bon.id_planilha  = tempo.id_planilha and bon.nro_linha = tempo.nro_linha limit 1;
+                     __ipi_unit  := tempo.vlr_ipi / tempo.quantidade_1;
 
-                    RAISE NOTICE '__id_planilha_v % __nro_linha_v % Venda % ' , __id_planilha_v , __nro_linha_v , __qtd_venda;
-                                   
-                                       
-                    if (__qtd_venda is not null) then
-                    
-                        __dias :=  0 ;
-                                                                
-                        __total_operacao := tempo.saldo + __qtd_venda;
-                          
-                        __perc_bon  := round((tempo.saldo / __total_operacao) * 100,2);
-                        
-                        __perc_ven  := round((__qtd_venda / __total_operacao) * 100,2);
-                          
-                        if (__perc_bon <= 40) then
-                          
-                            __qtd_usada :=  tempo.saldo;
-                              
-                            __metodo_qtd := 'D';
-                              
-                        else 
-                          
-                            __qtd_usada :=  round((__qtd_venda * 40)/60,0);
-                              
-                            __metodo_qtd := 'F';
-                          
-                        end if;
-                   
-                        __saldo_f := tempo.saldo - __qtd_usada;
-                        
-                        RAISE NOTICE 'Gravando -- Venda % Bonif. % Perc.  % Qtd Aproveitada %' , __qtd_venda, tempo.saldo, __perc_bon, __qtd_usada;
-                                   
-                        INSERT INTO controle_e(id_grupo,id_fechamento,id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e,metodo_qtd,metodo_pesquisa,perc_boni,perc_ven,dias) 
-                        VALUES(_id_grupo,_id_fechamento,tempo.id_planilha,tempo.nro_linha, __id_planilha_v, __nro_linha_v,__saldo_f, __qtd_usada,__metodo_qtd,__metodo_pesquisa,__perc_bon,__perc_ven,__dias);
-                    end if;                      
-                    if (__saldo_f = 0) then
-                           update nfe_det_trade set saldo = __saldo_f , status = '1'
+                    // rejeita intercompany
+                    select coaslece(count(*),0) from clientes cli into __total_intercompany where cli.id_grupo = _id_grupo and left(cli.cnpj_cpf,8) = tempo.radical_cnpj ;
+                  
+                    if (__total_intercompany > 0) then
+                           //Ignoro a nota
+                           update nfe_det_trade set status = '1'
                            where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
                     else 
-                           update nfe_det_trade set saldo = __saldo_f , status = '0'
-                           where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
-                    end if;
+                           //Dentro da nota
+                            select coalesce(nota.id_planilha,0),
+                                   coalesce(nota.nro_linha,0),
+                                   coalesce(nota.saldo,0) 
+                            into   __id_planilha_v,__nro_linha_v,__qtd_venda
+                            from   nfe_det_trade bon
+                            inner join clientes cli on cli.cod_empresa = bon.cod_emp and cli.local = bon.local
+                            inner join nfe_det_trade nota on 
+                                      nota.id_grupo = bon.id_grupo and bon.cod_emp = nota.cod_emp and bon.local = nota.local 
+                                      and  nota.id_operacao = 'V' and nota.status = '0'  and nota.dt_ref = bon.dt_ref and bon.material = nota.material and  nota.saldo > 0 
+                                      and  nota.nro_doc = bon.nro_doc  and nota.ipi_vlr > 0
+                            where  bon.id_grupo = _id_grupo and bon.id_planilha  = tempo.id_planilha and bon.nro_linha = tempo.nro_linha limit 1;
+
+                            RAISE NOTICE '__id_planilha_v % __nro_linha_v % Venda % ' , __id_planilha_v , __nro_linha_v , __qtd_venda;
+                                       
+                            if (__qtd_venda is not null) then
+                    
+                                __dias :=  0 ;
+                                                                
+                                __total_operacao := tempo.saldo + __qtd_venda;
+                          
+                                __perc_bon  := trunc((tempo.saldo / __total_operacao) * 100);
+                        
+                                __perc_ven  := trunc((__qtd_venda / __total_operacao) * 100);
+                          
+                                if (__perc_bon <= 40) then
+                          
+                                    __qtd_usada :=  tempo.saldo;
+                              
+                                    __metodo_qtd := 'D';
+                              
+                                else 
+                          
+                                    __qtd_usada :=  trunc((__qtd_venda * 40)/60);
+                              
+                                    __metodo_qtd := 'F';
+                          
+                                end if;
+                   
+                                __saldo_f               := tempo.saldo - __qtd_usada;
+
+                                __ipi_economico         := __qtd_usada * __ipi_unit;
+
+                                __ipi_economico_corrigido = __ipi_economico * ( (__taxa / 100) + 1);
+                        
+                                RAISE NOTICE 'Gravando -- Venda % Bonif. % Perc.  % Qtd Aproveitada %' , __qtd_venda, tempo.saldo, __perc_bon, __qtd_usada;
+                                   
+                                INSERT INTO controle_e(id_grupo,id_fechamento,id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e,metodo_qtd,metodo_pesquisa,perc_boni,perc_ven,dias) 
+                                VALUES(_id_grupo,_id_fechamento,tempo.id_planilha,tempo.nro_linha, __id_planilha_v, __nro_linha_v,__saldo_f, __qtd_usada,__metodo_qtd,__metodo_pesquisa,__perc_bon,__perc_ven,__dias);
+
+                        
+                                INSERT INTO nfe_det_trade_val_ipi(id_grupo,id,nro_linha,id_planilha_entrada,nro_linha_entrada,dtnfe,dtcredito,vlr_economico_ipi,dtfcorrecao,vlr_economico_ipi_corrigido,taxa,ipi_unit,qtd_calculada,usuarioinclusao,usuarioatualizacao) VALUES
+                                                                 (_id_grupo,tempo.id_planilha,tempo.nro_linha, __id_planilha_v, __nro_linha_v,tempo.dt_ref,'2025-05-22',__ipi_economico,'2025-05-22',__ipi_economico_corrigido,__taxa,__ipi_unit,__qtd_usada,16,0);
+
+
+                            end if;                      
+                            if (__saldo_f = 0) then
+                                   update nfe_det_trade set saldo = __saldo_f , status = '1'
+                                   where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                            else 
+                                   update nfe_det_trade set saldo = __saldo_f , status = '0'
+                                   where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                            end if;
     
+                    end if;
+
                     _saida := _saida + 1;
+ 
                   
               END LOOP;
 
@@ -139,7 +182,8 @@ CREATE TYPE Boni_Ven AS
     material     	text,
     quantidade_1 	numeric(15,4),
     saldo           numeric(15,4),
-    radical_cnpj    text
+    radical_cnpj    text ,
+    vlr_ipi         numeric(15,2)
 );
 go
 
@@ -197,16 +241,14 @@ AS $function$ DECLARE
         
         __saldo_f       numeric(15,4);
         
-        __cnpj_local_radical    text;
-        
+        __total_intercompany    int4;
         
         BEGIN
-
-           select left(cnpj_cpf,8) from clientes  into __cnpj_local_radical where id_grupo = _id_grupo and cod_empresa = _cod_emp and local = _local;
 
           _saida := 0;
           
           __saldo_f := 0;
+
           
           FOR tempo in  
      
@@ -231,13 +273,22 @@ AS $function$ DECLARE
 
               LOOP      
               
-                    //RAISE NOTICE 'id_grupo: %, id_planilha: %, nro_linha: %,_cod_emp %,_local %,tempo.material %,tempo.dt_ref %,tempo.saldo %,_id_fechamento %, Prazo %', 
+                   // rejeita intercompany
+                   select coaslece(count(*),0) from clientes cli into __total_intercompany where cli.id_grupo = _id_grupo and left(cli.cnpj_cpf,8) = tempo.radical_cnpj ;
+
+                    if (__total_intercompany > 0) then
+                           //Ignora a nota
+                           update nfe_det_trade set  status = '1' where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                    else 
+
+                           //RAISE NOTICE 'id_grupo: %, id_planilha: %, nro_linha: %,_cod_emp %,_local %,tempo.material %,tempo.dt_ref %,tempo.saldo %,_id_fechamento %, Prazo %', 
                     
-                    //tempo.id_grupo, tempo.id_planilha, tempo.nro_linha, _cod_emp,_local,tempo.material,tempo.dt_ref,tempo.saldo,_id_fechamento,30;
+                           //tempo.id_grupo, tempo.id_planilha, tempo.nro_linha, _cod_emp,_local,tempo.material,tempo.dt_ref,tempo.saldo,_id_fechamento,30;
                      
-                    select _saldo_f from seek_vend_boni(_id_grupo,tempo.id_planilha,tempo.nro_linha,_cod_emp,_local,tempo.material,tempo.dt_ref,tempo.saldo,_id_fechamento,30,tempo.radical_cnpj) into __saldo_f ; 
+                           select _saldo_f from seek_vend_boni(_id_grupo,tempo.id_planilha,tempo.nro_linha,_cod_emp,_local,tempo.material,tempo.dt_ref,tempo.saldo,_id_fechamento,30,tempo.cnpj_cpf) into __saldo_f ; 
                     
-                    update nfe_det_trade set saldo = __saldo_f , status = '1' where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                           update nfe_det_trade set saldo = __saldo_f , status = '1' where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                    end if;  
                     
                     _saida := _saida + 1;
                   
@@ -252,8 +303,8 @@ AS $function$ DECLARE
 go
 
 
-
-CREATE OR REPLACE FUNCTION public.seek_vend_boni(_id_grupo integer, _id_s integer, _nro_linha_s integer, _cod_empresa text, _local text, _material text, _data date, _saldo_s numeric, _id_fechamento integer, _validade integer, _cnpj text , OUT _saldo_f numeric)
+DROP FUNCTION seek_vend_boni(integer,integer,integer,text,text,text,date,numeric,integer,integer,text);
+CREATE OR REPLACE FUNCTION public.seek_vend_boni(_id_grupo integer, _id_s integer, _nro_linha_s integer, _cod_empresa text, _local text, _material text, _data date, _saldo_s numeric, _id_fechamento integer, _validade integer, _cnpj_radical text , OUT _saldo_f numeric)
  RETURNS numeric
  LANGUAGE plpgsql
 AS $function$
@@ -281,24 +332,41 @@ AS $function$
         __metodo_pesquisa text;
         
         __dias Int4;
+   
+        __ipi_unit      numeric(15,4);
+            
+        __ipi_economico numeric(15,4);
 
+        __ipi_economico_corrigido numeric(15,4);
+
+        __taxa  numeric(6,2);
+        
 
         BEGIN
          
-            _saldo_f := _saldo_s;
-            _qtd     := 0;
-            _last      := _data - (_validade * interval '1 day');
+            _saldo_f           := _saldo_s;
+
+            _qtd               := 0;
+
+            _last              := _data - (_validade * interval '1 day');
             
-            __metodo_qtd := '';
+            __metodo_qtd       := '';
           
-            __metodo_pesquisa := 'P';
+            __metodo_pesquisa  := 'P';
             
             __dias := 0;
+
+            __ipi_unit := 0;
+            
+            __ipi_economico := 0;
+
+            SELECT get_selic FROM into __taxa get_selic( cast(SUBSTRING(_dia_mes_ano,7,4) AS INT4), cast(SUBSTRING(to_char(dt_ref,'MM'),4,2) AS INT4) ,2025,03) ;
+           
             
             FOR vendas in  
             SELECT det.id_grupo, det.id_planilha , det.nro_linha, det.dt_ref, det.saldo, det.radical_cnpj
                FROM NFE_DET_TRADE DET
-               WHERE  DET.id_grupo = _id_grupo and DET.cod_emp = _cod_empresa and DET.local = _local and det.radical_cnpj = _cnpj
+               WHERE  DET.id_grupo = _id_grupo and DET.cod_emp = _cod_empresa and DET.local = _local and det.cnpj_cpf = _cnpj_radical
                       and DET.material = _material and 
                       ((DET.id_operacao = 'V'  AND DET.status = '0') ) 
                       and ( DET.dt_ref >= _LAST AND DET.dt_ref <= _data) and det.ipi_vlr > 0 AND det.saldo > 0
@@ -314,9 +382,9 @@ AS $function$
                                         
                     __total_operacao := _saldo_f + __qtd_venda;
                       
-                    __perc_bon  := round((_saldo_f / __total_operacao) * 100,2);
+                    __perc_bon  := trunc((_saldo_f / __total_operacao) * 100);
                     
-                    __perc_ven  := round((vendas.saldo / __total_operacao) * 100,2);
+                    __perc_ven  := trunc((vendas.saldo / __total_operacao) * 100);
                       
                     if (__perc_bon <= 40) then
                       
@@ -326,7 +394,7 @@ AS $function$
                           
                     else 
                       
-                        __qtd_usada :=  round((__qtd_venda * 40)/60,0);
+                        __qtd_usada  :=  trunc((__qtd_venda * 40)/60);
                           
                         __metodo_qtd := 'F';
                       
@@ -358,8 +426,8 @@ AS $function$
     
                        _saldo_f := _saldo_s;
               
-                      INSERT INTO controle_e(id_grupo,id_fechamento,id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e,metodo_qtd,metodo_pesquisa,perc_boni,perc_ven,dias) VALUES
-                                            (_id_grupo,_id_fechamento,_id_s, _nro_linha_s,vendas.id_planilha , vendas.nro_linha, _saldo_f, _qtd,__metodo_qtd,__metodo_pesquisa,__perc_bon,__perc_ven,__dias);
+                       INSERT INTO controle_e(id_grupo,id_fechamento,id_s, nro_linha_s, id_e, nro_linha_e, qtd_s, qtd_e,metodo_qtd,metodo_pesquisa,perc_boni,perc_ven,dias) VALUES
+                                             (_id_grupo,_id_fechamento,_id_s,_nro_linha_s,vendas.id_planilha , vendas.nro_linha, _saldo_f, _qtd,__metodo_qtd,__metodo_pesquisa,__perc_bon,__perc_ven,__dias);
                     end if;
                     
                     IF (_saldo_f = 0) THEN

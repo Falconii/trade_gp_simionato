@@ -368,6 +368,10 @@ add column vlr_economico_pis_corrigido_pauta       numeric(18,4) not null defaul
 add column vlr_economico_cofins_corrigido_pauta    numeric(18,4) not null default 0;   
 */
 
+
+
+
+
 DROP TABLE IF EXISTS cont_cab_proc;
 CREATE TABLE public.cont_cab_proc( 
     id_grupo      int4        NOT NULL,
