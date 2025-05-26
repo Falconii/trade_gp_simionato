@@ -1,12 +1,19 @@
-select local,dt_ref,id_operacao
+select local,dt_ref,id_operacao,status
 from nfe_det_trade 
-where to_char(dt_ref,'MM/YYYY') = '07/2021'
-GROUP BY local,dt_ref,id_operacao
-ORDER BY local,dt_ref,id_operacao
+where    to_char(dt_ref,'MM/YYYY') = '01/2021' and 
+         local = '0057'
+GROUP BY local,dt_ref,id_operacao,status
+ORDER BY local,dt_ref,id_operacao,status
 
-select * from bonixvenda_periodo(1,'1001','0003','16/07/2021',1)
+73410326005715
 
-select * from bonixvenda_nota(1,'1001','0003','16/07/2021',1)
+select * from clientes cli  where cli.id_grupo = 1 and cli.cnpj_cpf = '73410326001213' and  left(cli.cnpj_cpf,8) = '73410326' ;
+
+select * from clientes cli where cli.id_grupo = 1 and cli.cod_empresa = '1001' and cli.local = '0057' 
+
+select * from bonixvenda_periodo(1,'1001','0057','21/01/2021',1)
+
+select * from bonixvenda_nota(1,'1001','0057','01/07/2021',1)
 
 select * from nfe_det_trade where dt_ref = '2021/03/04' and id_operacao = 'B'
 
@@ -54,3 +61,15 @@ where bon.id_grupo = 1 and bon.cod_emp = '1001' and to_char(bon.dt_ref,'DD/MM/YY
 order by con.id_grupo,con.id_fechamento,con.id_s,con.nro_linha_s,con.seq
 
 select left(cnpj_cpf,8) from clientes where id_grupo = 1 and cod_empresa = '1004' and local = '0010'
+
+select * from clientes where cnpj_cpf = '02526303516' 
+
+
+select * from nfe_det_trade where nro_posicao = '000003016'
+
+
+select * from nfe_det_trade where id_operacao = 'V' and cnpj_cpf = '02526303516' and material = '2000076' and dt_ref <= '2021-01-21' order by dt_ref
+
+
+select * from nfe_det_trade where cod_emp = '1001' and local = '0057' and id_operacao = 'B' and dt_ref = '2021-01-21'  and status = '0'  
+                     and saldo > 0 
