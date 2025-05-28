@@ -640,5 +640,16 @@ CREATE INDEX nfe_cab_trade_arquivo_5910
 GO
 
 
+DROP TABLE IF EXISTS parametro;
+CREATE TABLE public.parametro  ( 
+	chave 	varchar(10) NOT NULL,
+    valor   varchar(40) NOT NULL,
+	PRIMARY KEY(chave)
+)
+WITHOUT OIDS 
+TABLESPACE "Producao"
+GO
+
+
 
 

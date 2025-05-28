@@ -35,6 +35,8 @@ namespace Trade_GP.Ipi.Forms
             this.btProximo = new System.Windows.Forms.Button();
             this.dbLocais = new System.Windows.Forms.DataGridView();
             this.gbMensaProcessamento = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbSelic = new System.Windows.Forms.ComboBox();
             this.btNovo = new System.Windows.Forms.Button();
             this.lblLocalPeriodo = new System.Windows.Forms.Label();
             this.lblProcesso = new System.Windows.Forms.Label();
@@ -75,7 +77,7 @@ namespace Trade_GP.Ipi.Forms
             this.gbParametros.Margin = new System.Windows.Forms.Padding(4);
             this.gbParametros.Name = "gbParametros";
             this.gbParametros.Padding = new System.Windows.Forms.Padding(4);
-            this.gbParametros.Size = new System.Drawing.Size(287, 151);
+            this.gbParametros.Size = new System.Drawing.Size(287, 235);
             this.gbParametros.TabIndex = 65;
             this.gbParametros.TabStop = false;
             this.gbParametros.Text = "Perâmetros";
@@ -95,7 +97,7 @@ namespace Trade_GP.Ipi.Forms
             // btProximo
             // 
             this.btProximo.ForeColor = System.Drawing.Color.Green;
-            this.btProximo.Location = new System.Drawing.Point(144, 103);
+            this.btProximo.Location = new System.Drawing.Point(135, 156);
             this.btProximo.Margin = new System.Windows.Forms.Padding(4);
             this.btProximo.Name = "btProximo";
             this.btProximo.Size = new System.Drawing.Size(133, 28);
@@ -111,7 +113,7 @@ namespace Trade_GP.Ipi.Forms
             this.dbLocais.Margin = new System.Windows.Forms.Padding(4);
             this.dbLocais.Name = "dbLocais";
             this.dbLocais.RowHeadersWidth = 51;
-            this.dbLocais.Size = new System.Drawing.Size(952, 154);
+            this.dbLocais.Size = new System.Drawing.Size(952, 235);
             this.dbLocais.TabIndex = 66;
             // 
             // gbMensaProcessamento
@@ -119,6 +121,8 @@ namespace Trade_GP.Ipi.Forms
             this.gbMensaProcessamento.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbMensaProcessamento.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.gbMensaProcessamento.Controls.Add(this.label1);
+            this.gbMensaProcessamento.Controls.Add(this.cbSelic);
             this.gbMensaProcessamento.Controls.Add(this.btNovo);
             this.gbMensaProcessamento.Controls.Add(this.lblLocalPeriodo);
             this.gbMensaProcessamento.Controls.Add(this.lblProcesso);
@@ -128,14 +132,37 @@ namespace Trade_GP.Ipi.Forms
             this.gbMensaProcessamento.Margin = new System.Windows.Forms.Padding(4);
             this.gbMensaProcessamento.Name = "gbMensaProcessamento";
             this.gbMensaProcessamento.Padding = new System.Windows.Forms.Padding(4);
-            this.gbMensaProcessamento.Size = new System.Drawing.Size(621, 151);
+            this.gbMensaProcessamento.Size = new System.Drawing.Size(621, 232);
             this.gbMensaProcessamento.TabIndex = 67;
             this.gbMensaProcessamento.TabStop = false;
             this.gbMensaProcessamento.Text = "Atenção";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 96);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(38, 17);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Selic";
+            // 
+            // cbSelic
+            // 
+            this.cbSelic.FormattingEnabled = true;
+            this.cbSelic.Items.AddRange(new object[] {
+            "01/2025",
+            "02/2025",
+            "03/2025"});
+            this.cbSelic.Location = new System.Drawing.Point(11, 119);
+            this.cbSelic.Margin = new System.Windows.Forms.Padding(4);
+            this.cbSelic.Name = "cbSelic";
+            this.cbSelic.Size = new System.Drawing.Size(574, 24);
+            this.cbSelic.TabIndex = 8;
+            // 
             // btNovo
             // 
-            this.btNovo.Location = new System.Drawing.Point(429, 115);
+            this.btNovo.Location = new System.Drawing.Point(435, 195);
             this.btNovo.Margin = new System.Windows.Forms.Padding(4);
             this.btNovo.Name = "btNovo";
             this.btNovo.Size = new System.Drawing.Size(156, 28);
@@ -148,7 +175,7 @@ namespace Trade_GP.Ipi.Forms
             // lblLocalPeriodo
             // 
             this.lblLocalPeriodo.AutoSize = true;
-            this.lblLocalPeriodo.Location = new System.Drawing.Point(8, 90);
+            this.lblLocalPeriodo.Location = new System.Drawing.Point(8, 164);
             this.lblLocalPeriodo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLocalPeriodo.Name = "lblLocalPeriodo";
             this.lblLocalPeriodo.Size = new System.Drawing.Size(277, 17);
@@ -175,7 +202,7 @@ namespace Trade_GP.Ipi.Forms
             // 
             // btProcessar
             // 
-            this.btProcessar.Location = new System.Drawing.Point(265, 116);
+            this.btProcessar.Location = new System.Drawing.Point(271, 196);
             this.btProcessar.Margin = new System.Windows.Forms.Padding(4);
             this.btProcessar.Name = "btProcessar";
             this.btProcessar.Size = new System.Drawing.Size(156, 28);
@@ -188,17 +215,18 @@ namespace Trade_GP.Ipi.Forms
             // lblTarefas
             // 
             this.lblTarefas.AutoSize = true;
-            this.lblTarefas.Location = new System.Drawing.Point(696, 287);
+            this.lblTarefas.Location = new System.Drawing.Point(696, 324);
             this.lblTarefas.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTarefas.Name = "lblTarefas";
             this.lblTarefas.Size = new System.Drawing.Size(43, 17);
             this.lblTarefas.TabIndex = 75;
             this.lblTarefas.Text = "Lotes";
+            this.lblTarefas.Click += new System.EventHandler(this.lblTarefas_Click);
             // 
             // lblMeses
             // 
             this.lblMeses.AutoSize = true;
-            this.lblMeses.Location = new System.Drawing.Point(10, 287);
+            this.lblMeses.Location = new System.Drawing.Point(13, 324);
             this.lblMeses.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMeses.Name = "lblMeses";
             this.lblMeses.Size = new System.Drawing.Size(49, 17);
@@ -211,7 +239,7 @@ namespace Trade_GP.Ipi.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblCancelamentoAtivado.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblCancelamentoAtivado.ForeColor = System.Drawing.Color.Red;
-            this.lblCancelamentoAtivado.Location = new System.Drawing.Point(14, 249);
+            this.lblCancelamentoAtivado.Location = new System.Drawing.Point(16, 296);
             this.lblCancelamentoAtivado.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCancelamentoAtivado.Name = "lblCancelamentoAtivado";
             this.lblCancelamentoAtivado.Size = new System.Drawing.Size(1900, 28);
@@ -225,11 +253,11 @@ namespace Trade_GP.Ipi.Forms
             | System.Windows.Forms.AnchorStyles.Left)));
             this.dbMeses.CausesValidation = false;
             this.dbMeses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dbMeses.Location = new System.Drawing.Point(13, 319);
+            this.dbMeses.Location = new System.Drawing.Point(13, 345);
             this.dbMeses.Margin = new System.Windows.Forms.Padding(4);
             this.dbMeses.Name = "dbMeses";
             this.dbMeses.RowHeadersWidth = 51;
-            this.dbMeses.Size = new System.Drawing.Size(656, 346);
+            this.dbMeses.Size = new System.Drawing.Size(656, 320);
             this.dbMeses.TabIndex = 76;
             // 
             // dtGridLog
@@ -239,11 +267,11 @@ namespace Trade_GP.Ipi.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dtGridLog.CausesValidation = false;
             this.dtGridLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtGridLog.Location = new System.Drawing.Point(699, 319);
+            this.dtGridLog.Location = new System.Drawing.Point(699, 345);
             this.dtGridLog.Margin = new System.Windows.Forms.Padding(4);
             this.dtGridLog.Name = "dtGridLog";
             this.dtGridLog.RowHeadersWidth = 51;
-            this.dtGridLog.Size = new System.Drawing.Size(1212, 346);
+            this.dtGridLog.Size = new System.Drawing.Size(1212, 320);
             this.dtGridLog.TabIndex = 77;
             // 
             // FormBoniXVendas
@@ -294,5 +322,7 @@ namespace Trade_GP.Ipi.Forms
         private System.Windows.Forms.Label lblCancelamentoAtivado;
         private System.Windows.Forms.DataGridView dbMeses;
         private System.Windows.Forms.DataGridView dtGridLog;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cbSelic;
     }
 }

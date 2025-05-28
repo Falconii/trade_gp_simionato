@@ -140,6 +140,7 @@
     <Compile Include="Dao\postgre\daoNfeDetTrade.cs" />
     <Compile Include="Dao\postgre\daoResumo5405.cs" />
     <Compile Include="Dao\postgre\daoSaldo.cs" />
+    <Compile Include="Dao\postgre\daoParametro.cs" />
     <Compile Include="Dao\postgre\daoSelic.cs" />
     <Compile Include="Dao\postgre\daoUsuario.cs" />
     <Compile Include="DataBase\RunCommand.cs" />
@@ -335,6 +336,7 @@
     <Compile Include="Models\Nfe_CabE_Qry_01.cs" />
     <Compile Include="Models\Nfe_DetE_Qry_00 .cs" />
     <Compile Include="Models\Nfe_DetE_Qry_01.cs" />
+    <Compile Include="Models\ParametroModel.cs" />
     <Compile Include="Models\ProgressReportModel.cs" />
     <Compile Include="Models\Resumo_5405_01.cs" />
     <Compile Include="Models\Resumo_5405.cs" />
@@ -475,9 +477,12 @@
   <ItemGroup>
     <Content Include="Ipi\Scripts\Banco\Banco De Dados.sql" />
     <Content Include="Ipi\Scripts\Banco\tabelas.sql" />
+    <Content Include="Ipi\Scripts\preparar nota para simular na nota.sql" />
     <Content Include="Ipi\Scripts\rotinas para calculor qtd ipi.sql" />
+    <Content Include="Ipi\Scripts\teste calculo ipi economico.sql" />
     <Content Include="Ipi\Scripts\teste calculo qtd ipi.sql" />
     <Content Include="Ipi\Scripts\Triggers e Funcoes IPI.sql" />
+    <Content Include="Ipi\Scripts\vlr_enconomico_ipi.sql" />
     <Content Include="Script\Apoio2\Acumulado CFOP.sql" />
     <Content Include="Script\Apoio2\Adaptação Novo Calculo.sql" />
     <Content Include="Script\Apoio2\gerar acumulado.sql" />

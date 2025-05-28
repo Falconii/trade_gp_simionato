@@ -288,6 +288,7 @@ namespace Trade_GP.Ipi.Forms
             this.Controls.Add(this.lblTitulo);
             this.Name = "FormValorizaçãoIpi";
             this.Text = "Valor Econômico IPI";
+            this.Activated += new System.EventHandler(this.FormValorizaçãoIpi_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormValorizaçãoIpi_FormClosed);
             this.Load += new System.EventHandler(this.FormValorizaçãoIpi_Load);
             this.gbParametros.ResumeLayout(false);

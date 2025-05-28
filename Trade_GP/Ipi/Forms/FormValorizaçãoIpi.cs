@@ -36,7 +36,14 @@ namespace Trade_GP.Ipi.Forms
         private Boolean Cancelar = false;
 
         private List<ContadorModel> contadores = new List<ContadorModel>();
+
+        List<Selic> Selics = new List<Selic>();
+
+        int _ano_selic = 0;
+
+        int _mes_selic = 0;
         public ToolStripMenuItem menu { get; internal set; }
+
         public FormValorizaçãoIpi()
         {
             InitializeComponent();
@@ -44,7 +51,26 @@ namespace Trade_GP.Ipi.Forms
 
         private void FormValorizaçãoIpi_Load(object sender, EventArgs e)
         {
-            WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            daoParametro dao = new daoParametro();
+
+            Parametro par = new Parametro();
+
+            par = dao.Seek("SELIC");
+
+            getSelics(par);
+
+            if (Selics.Count == 0)
+            {
+                status_semselic();
+            }
+            else
+            {
+                btProximoFlag = false;
+
+                recomeco();
+
+                status_inical();
+            }
         }
 
         private void FormValorizaçãoIpi_FormClosed(object sender, FormClosedEventArgs e)
@@ -52,6 +78,24 @@ namespace Trade_GP.Ipi.Forms
             menu.Enabled = true;
         }
 
+        private void status_semselic()
+        {
+            gbMensaProcessamento.Visible = false;
+            lblMeses.Visible = false;
+            lblTarefas.Visible = false;
+            dbMeses.Visible = false;
+            dtGridLog.Visible = false;
+            dbLocais.Visible = false;
+            btProcessar.Enabled = false;
+            lblCancelamentoAtivado.Visible = false;
+            btProcessar.Tag = 0;
+            btProximo.Enabled = btProximoFlag;
+            btNovo.Visible = false;
+            dtGridLog.ReadOnly = true;
+            dbLocais.ReadOnly = true;
+            dbMeses.ReadOnly = true;
+            btProcessar.Visible = false;
+        }
         private void recomeco()
         {
             Parametros = new List<ParamLocal>();
@@ -340,6 +384,34 @@ namespace Trade_GP.Ipi.Forms
         {
             if ((int)btProcessar.Tag == 0) // Processamento
             {
+
+
+                string _selic = cbSelic.SelectedItem as string;
+
+                _ano_selic = _selic.Split('/')[1].IntParse();
+
+                _mes_selic = _selic.Split('/')[0].IntParse();
+
+                if (((_mes_selic < 1) || (_mes_selic > 12)) || ((_ano_selic < 2025) || (_ano_selic > 2025)))
+                {
+                    MessageBox.Show("Verifique os Parametros Da Selic!");
+
+                    return;
+                }
+
+                daoParametro dao = new daoParametro();
+
+                Parametro param = dao.Seek("SELIC");
+
+                if (!(param == null))
+                {
+
+                    param.Valor = cbSelic.SelectedItem as string;
+
+                    dao.Update(param);
+
+                }
+
                 Cancelar = false;
 
                 lblProcesso.Text = "Iniciando Processo!";
@@ -625,7 +697,7 @@ namespace Trade_GP.Ipi.Forms
                 try
                 {
 
-                    _saida = await daoDet.Saldosv2X(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo);
+                    _saida = await daoDet.Vlr_Economico_IPI(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo,_ano_selic,_mes_selic);
                     // Simula Processamento
                     // await Task.Run(async delegate
                     // {
@@ -734,6 +806,44 @@ namespace Trade_GP.Ipi.Forms
                 String stringValue = ((DateTime)e.Value).ToString("dd-MM-yyyy hh:mm:ss");
                 e.Value = stringValue;
             }
+        }
+
+        private void getSelics(Parametro par)
+        {
+            try
+            {
+                daoSelic dao = new daoSelic();
+                Selics = dao.getUltimasSelics(3);
+                cbSelic.Items.Clear();
+                Selics.ForEach(selic => cbSelic.Items.Add(selic.Mes + "/" + selic.Ano));
+                if (par == null)
+                {
+                    cbSelic.SelectedIndex = 0;
+                }
+                else
+                {
+                    int idx = Selics.FindIndex(selic => selic.Mes + "/" + selic.Ano == par.Valor.Trim());
+                    if (idx == -1)
+                    {
+                        cbSelic.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        cbSelic.SelectedIndex = idx;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Falha Ao Carregar A Taxa Selic");
+            }
+
+        }
+
+        private void FormValorizaçãoIpi_Activated(object sender, EventArgs e)
+        {
+            WindowState = System.Windows.Forms.FormWindowState.Maximized;
         }
     }
 }

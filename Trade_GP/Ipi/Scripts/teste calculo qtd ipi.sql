@@ -11,17 +11,27 @@ select * from clientes cli  where cli.id_grupo = 1 and cli.cnpj_cpf = '734103260
 
 select * from clientes cli where cli.id_grupo = 1 and cli.cod_empresa = '1001' and cli.local = '0057' 
 
-select * from bonixvenda_periodo(1,'1001','0057','21/01/2021',1)
+select * from bonixvenda_periodo(1,'1001','0057','21/01/2021',1,2025,03)
 
-select * from bonixvenda_nota(1,'1001','0057','01/07/2021',1)
+select * from bonixvenda_nota(1,'1001','0057','21/01/2021',1,2025,03)
 
 select * from nfe_det_trade where dt_ref = '2021/03/04' and id_operacao = 'B'
 
 select * from controle_e
 
-select  con.*
+select * from nfe_det_trade_val_ipi
+
+select cli.cnpj_cpf  as cnpj_empresa
        ,bon.cnpj_cpf as cnpj_boni
        ,ven.cnpj_cpf as cnpj_venda
+       ,case
+           when bon.status = '0' then 'Não Processado'
+           when bon.status = '1' then 'Processado Normalmente'
+           when bon.status = '2' then 'Processado Intercompany'
+           when bon.status = '3' then 'Não Processado  "Não é bebida"'
+           when bon.status = '4' then 'Não Processado  "Bonificação Própria"'
+           else                       'Não Identificado -> ' || bon.status
+        end as status_bon
        ,bon.local
        ,bon.nro_doc
        ,bon.cfop
@@ -45,7 +55,6 @@ select  con.*
        ,bon.dt_ref as bonificacao_emissao
        ,ven.dt_ref as venda_emissao
        ,con.dias
-       ,bon.status as status_bon
        ,bon.ipi_vlr
        ,ven.nro_doc
        ,ven.cfop
@@ -54,11 +63,50 @@ select  con.*
        ,ven.saldo
        ,ven.ipi_vlr
        ,ven.status
+       ,val.*
 from controle_e con
 inner join nfe_det_trade bon on bon.id_grupo = con.id_grupo and bon.id_planilha = con.id_s and bon.nro_linha = con.nro_linha_s
 inner join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha = con.id_e and ven.nro_linha = con.nro_linha_e
-where bon.id_grupo = 1 and bon.cod_emp = '1001' and to_char(bon.dt_ref,'DD/MM/YYYY') = '04/03/2021'
+left  join nfe_det_trade_val_ipi val on val.id_grupo = bon.id_grupo and val.id = bon.id_planilha and val.nro_linha = bon.nro_linha 
+           and val.id_planilha_entrada = ven.id_planilha and val.nro_linha_entrada = ven.nro_linha
+inner join clientes cli      on cli.id_grupo = bon.id_grupo and cli.cod_empresa = bon.cod_emp and cli.local = bon.local
+where bon.id_grupo = 1 and bon.cod_emp = '1001' and bon.local = '0057' and to_char(bon.dt_ref,'YYYY') = '2021'
 order by con.id_grupo,con.id_fechamento,con.id_s,con.nro_linha_s,con.seq
+
+
+select  cli.cnpj_cpf  as cnpj_empresa
+        ,bon.cnpj_cpf as cnpj_boni
+       ,bon.local
+       ,case
+           when bon.status = '0' then bon.status || ' -> Não Processado'
+           when bon.status = '1' then bon.status || ' -> Processado Normalmente'
+           when bon.status = '2' then bon.status || ' -> Processado Intercompany'
+           when bon.status = '3' then bon.status || ' -> Não Processado  "Não é bebida"'
+           when bon.status = '4' then bon.status || ' -> Não Processado  "Bonificação Própria"'
+           else           ' Não Identificado -> ' || bon.status
+        end as status_bon
+       ,bon.id_operacao 
+       ,bon.nro_doc
+       ,bon.cfop
+       ,bon.material
+       ,bon.denom
+       ,bon.quantidade_1
+       ,bon.saldo
+       ,bon.dt_ref as bonificacao_emissao
+       ,bon.ipi_vlr
+       ,bon.bebida
+from nfe_det_trade bon
+inner join clientes cli on cli.id_grupo = bon.id_grupo and cli.cod_empresa = bon.cod_emp and cli.local = bon.local
+where bon.id_grupo = 1 and bon.cod_emp = '1001' and bon.local = '0057' and to_char(bon.dt_ref,'YYYY') = '2021' and id_operacao = 'B'
+
+order by bon.id_grupo,bon.cod_emp,bon.local,bon.id_operacao
+
+
+
+
+
+
+
 
 select left(cnpj_cpf,8) from clientes where id_grupo = 1 and cod_empresa = '1004' and local = '0010'
 
@@ -68,8 +116,53 @@ select * from clientes where cnpj_cpf = '02526303516'
 select * from nfe_det_trade where nro_posicao = '000003016'
 
 
-select * from nfe_det_trade where id_operacao = 'V' and cnpj_cpf = '02526303516' and material = '2000076' and dt_ref <= '2021-01-21' order by dt_ref
+select * from nfe_det_trade where id_operacao = 'V' and cnpj_cpf = '02526303516' and material = '2000076' and dt_ref <= '2021-01-21' order by  dt_ref desc
 
 
-select * from nfe_det_trade where cod_emp = '1001' and local = '0057' and id_operacao = 'B' and dt_ref = '2021-01-21'  and status = '0'  
+select * from nfe_det_trade where cod_emp = '1001' and local = '0057' and id_operacao = 'B' and dt_ref = '2021-01-21' 
+ 
+ 
+ and status = '0'  
                      and saldo > 0 
+                     
+                     
+ /* teste intercompany */
+ 
+ select * from clientes cli where cod_empresa = '1001' and ( local = '0001' or local = '0057' )
+ 
+ select coalesce(count(*),0) from clientes cli  where cli.id_grupo = 1 and left(cli.cnpj_cpf,8) = '73410326' ;
+
+ //73410326
+ CERVEJARIA PETROPOLIS S/A
+ 
+ 73410326000160
+ 
+ //bonificacao
+ select * from nfe_det_trade where cod_emp = '1001' and local = '0057' and nro_doc = '8709726455'
+ go
+//venda
+ select * from nfe_det_trade where cod_emp = '1001' and local = '0057' and nro_doc = '8708985417' or nro_doc = '8709305845'
+ go
+ 
+ 
+ update nfe_det_trade set cnpj_cpf = '73410326000160', radical_cnpj = '73410326' where cod_emp = '1001' and local = '0057' and nro_doc = '8709726455'
+ go
+ update nfe_det_trade set cnpj_cpf = '73410326000160', radical_cnpj = '73410326' where cod_emp = '1001' and local = '0057' and nro_doc = '8708985417' or nro_doc = '8709305845'
+ go
+ 
+ 
+ select coalesce(count(*),0) from clientes cli into __total_intercompany where cli.id_grupo = _id_grupo and left(cli.cnpj_cpf,8) = tempo.radical_cnpj ;
+
+
+ //Teste Não Bebida
+ 
+ update nfe_det_trade set bebida = 'N' where cod_emp = '1001' and local = '0057' and nro_doc = '8709726455'
+ go
+ 
+ 
+ select * from selic order by ano desc, mes desc limit 3
+ 
+ 
+ select * from parametro
+ 
+ UPDATE PARAMETRO SET  VALOR = '02/2025'  WHERE  CHAVE = 'SELIC' 

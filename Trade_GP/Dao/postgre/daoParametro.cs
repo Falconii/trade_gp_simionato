@@ -8,16 +8,16 @@ using System.Windows.Forms;
 
 namespace Trade_GP.Dao.postgre
 {
-    class daoSelic
+    class daoParametro
     {
-        public Selic Insert(Selic obj)
+        public Parametro Insert(Parametro obj)
         {
-            Selic retorno = null;
+            Parametro retorno = null;
 
-            String StringInsert = $" INSERT INTO SELIC " +
-                                "(ANO,MES,TAXA) " +
+            String StringInsert = $" INSERT INTO PARAMETRO " +
+                                "(CHAVE,VALOR) " +
                                 " VALUES(" +
-                                $"  '{obj.Ano}', '{obj.Mes}', {obj.Taxa.DoubleParseDb()} ) RETURNING  * ";
+                                $"  '{obj.Chave}', '{obj.Valor}') RETURNING  * ";
             try
             {
 
@@ -37,7 +37,7 @@ namespace Trade_GP.Dao.postgre
                                 while (objDataReader.Read())
                                 {
 
-                                    retorno = PopulaSelic(objDataReader);
+                                    retorno = PopulaParametro(objDataReader);
 
                                 }
                             }
@@ -67,13 +67,12 @@ namespace Trade_GP.Dao.postgre
 
         }
 
-        public void Update(Selic
-            obj)
+        public void Update(Parametro obj)
         {
 
-            String StringUpdate = $" UPDATE SELIC SET " +
-                    $" TAXA = {obj.Taxa.DoubleParseDb()}  " +
-                    $"WHERE ANO = '{obj.Ano}' AND MES = '{obj.Mes}'";
+            String StringUpdate = $" UPDATE PARAMETRO SET " +
+                    $" CHAVE = '{obj.Chave}' " +
+                    $"WHERE VALOR = '{obj.Valor}' ";
 
             Console.WriteLine(StringUpdate);
 
@@ -90,23 +89,23 @@ namespace Trade_GP.Dao.postgre
 
         }
 
-        public void Delete(Selic obj)
+        public void Delete(Parametro obj)
         {
 
-            String StringDelete = $" DELETE FROM  SELIC  WHERE ANO = '{obj.Ano}'  AND MES = '{obj.Mes}'";
+            String StringDelete = $" DELETE FROM  PARAMETRO  WHERE CHAVE = '{obj.Chave}' ";
 
             DataBase.RunCommand.CreateCommand(StringDelete);
 
         }
 
-        public Selic Seek(string ano, string mes)
+        public Parametro Seek(string chave)
         {
 
-            Selic obj = null;
+            Parametro obj = null;
 
             string strStringConexao = DataBase.RunCommand.connectionString;
 
-            string strSelect = $"SELECT * FROM SELIC WHERE ANO = '{ano}'  AND MES = '{mes}'";
+            string strSelect = $"SELECT * FROM PARAMETRO WHERE CHAVE = '{chave}' ";
 
             using (var objConexao = new NpgsqlConnection(strStringConexao))
             {
@@ -123,9 +122,9 @@ namespace Trade_GP.Dao.postgre
 
                             objDataReader.Read();
 
-                            obj = new Selic();
+                            obj = new Parametro();
 
-                            obj = PopulaSelic(objDataReader);
+                            obj = PopulaParametro(objDataReader);
 
 
                         }
@@ -145,27 +144,26 @@ namespace Trade_GP.Dao.postgre
             return obj;
         }
 
-        private Selic PopulaSelic(NpgsqlDataReader objDataReader)
+        private Parametro PopulaParametro(NpgsqlDataReader objDataReader)
         {
 
-            var obj = new Selic()
+            var obj = new Parametro()
             {
-                Ano = objDataReader["ANO"].ToString(),
-                Mes = objDataReader["MES"].ToString(),
-                Taxa = Convert.ToDouble(objDataReader["TAXA"])
+                Chave = objDataReader["CHAVE"].ToString(),
+                Valor = objDataReader["VALOR"].ToString()
             };
 
             return obj;
         }
 
-        public List<Selic> getAll(int Ordenacao, string Filtro)
+        public List<Parametro> getAll(int Ordenacao, string Filtro)
         {
 
-            Selic obj = null;
+            Parametro obj = null;
 
             string strStringConexao = DataBase.RunCommand.connectionString;
 
-            List<Selic> lista = new List<Selic>();
+            List<Parametro> lista = new List<Parametro>();
 
             string strSelect = SqlGrid(Ordenacao, Filtro);
 
@@ -187,9 +185,9 @@ namespace Trade_GP.Dao.postgre
                             while (objDataReader.Read())
                             {
 
-                                obj = new Selic();
+                                obj = new Parametro();
 
-                                obj = PopulaSelic(objDataReader);
+                                obj = PopulaParametro(objDataReader);
 
                                 lista.Add(obj);
 
@@ -218,10 +216,9 @@ namespace Trade_GP.Dao.postgre
             string OrderBy = "";
 
             string strSelect = "SELECT  " +
-                                 "ANO,  " +
-                                 "MES,  " +
-                                 "TAXA  " +
-                                 "FROM SELIC ";
+                                 "CHAVE,  " +
+                                 "VALOR  " +
+                                 "FROM PARAMETRO ";
 
             //Adiciona WHERE 
             if (Filtro.Trim() != "")
@@ -229,7 +226,7 @@ namespace Trade_GP.Dao.postgre
                 switch (Ordenacao)
                 {
                     case 0:
-                        Where = $"WHERE ANO = '{Filtro}' ";
+                        Where = $"WHERE CHAVE = '{Filtro}' ";
                         break;
                 }
 
@@ -242,7 +239,7 @@ namespace Trade_GP.Dao.postgre
             switch (Ordenacao)
             {
                 case 0:
-                    OrderBy = $"ORDER BY ANO,MES";
+                    OrderBy = $"ORDER BY CHAVE ";
                     break;
             }
 
@@ -252,59 +249,7 @@ namespace Trade_GP.Dao.postgre
 
         }
 
-        public List<Selic> getUltimasSelics(int ultimas)
-        {
-
-            Selic obj = null;
-
-            string strStringConexao = DataBase.RunCommand.connectionString;
-
-            List<Selic> lista = new List<Selic>();
-
-            string strSelect = $"select* from selic order by ano desc, mes desc limit {ultimas}";
-
-            Console.WriteLine(strSelect);
-
-            using (var objConexao = new NpgsqlConnection(strStringConexao))
-            {
-                using (var objCommand = new NpgsqlCommand(strSelect, objConexao))
-                {
-                    try
-                    {
-                        objConexao.Open();
-
-                        var objDataReader = objCommand.ExecuteReader();
-
-                        if (objDataReader.HasRows)
-                        {
-
-                            while (objDataReader.Read())
-                            {
-
-                                obj = new Selic();
-
-                                obj = PopulaSelic(objDataReader);
-
-                                lista.Add(obj);
-
-                            }
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(ex.Message);
-                    }
-                    finally
-                    {
-                        objConexao.Close();
-                    }
-                }
-            }
-
-            return lista;
-        }
-
+        
     }
 
 
