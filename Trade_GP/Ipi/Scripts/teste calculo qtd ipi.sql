@@ -70,7 +70,8 @@ inner join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha 
 left  join nfe_det_trade_val_ipi val on val.id_grupo = bon.id_grupo and val.id = bon.id_planilha and val.nro_linha = bon.nro_linha 
            and val.id_planilha_entrada = ven.id_planilha and val.nro_linha_entrada = ven.nro_linha
 inner join clientes cli      on cli.id_grupo = bon.id_grupo and cli.cod_empresa = bon.cod_emp and cli.local = bon.local
-where bon.id_grupo = 1 and bon.cod_emp = '1001' and bon.local = '0057' and to_char(bon.dt_ref,'YYYY') = '2021'
+where bon.id_grupo = 1 and bon.cod_emp = '1001' and bon.local = '0057' 
+    --and to_char(bon.dt_ref,'YYYY') = '2017'
 order by con.id_grupo,con.id_fechamento,con.id_s,con.nro_linha_s,con.seq
 
 
@@ -97,11 +98,21 @@ select  cli.cnpj_cpf  as cnpj_empresa
        ,bon.bebida
 from nfe_det_trade bon
 inner join clientes cli on cli.id_grupo = bon.id_grupo and cli.cod_empresa = bon.cod_emp and cli.local = bon.local
-where bon.id_grupo = 1 and bon.cod_emp = '1001' and bon.local = '0057' and to_char(bon.dt_ref,'YYYY') = '2021' and id_operacao = 'B'
-
+where bon.id_grupo = 1 and bon.cod_emp = '1001' and bon.local = '0057' and to_char(bon.dt_ref,'YYYY') = '2017' and id_operacao = 'B' 
+and quantidade_1 = saldo
 order by bon.id_grupo,bon.cod_emp,bon.local,bon.id_operacao
 
 
+select  distinct bon.nro_doc
+       ,bon.cfop
+       ,bon.material
+from controle_e con
+inner join nfe_det_trade bon on bon.id_grupo = con.id_grupo and bon.id_planilha = con.id_s and bon.nro_linha = con.nro_linha_s
+inner join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha = con.id_e and ven.nro_linha = con.nro_linha_e
+left  join nfe_det_trade_val_ipi val on val.id_grupo = bon.id_grupo and val.id = bon.id_planilha and val.nro_linha = bon.nro_linha 
+           and val.id_planilha_entrada = ven.id_planilha and val.nro_linha_entrada = ven.nro_linha
+inner join clientes cli      on cli.id_grupo = bon.id_grupo and cli.cod_empresa = bon.cod_emp and cli.local = bon.local
+where bon.id_grupo = 1 and bon.cod_emp = '1001' and bon.local = '0057' and to_char(bon.dt_ref,'YYYY') = '2017'
 
 
 
@@ -166,3 +177,20 @@ select * from nfe_det_trade where cod_emp = '1001' and local = '0057' and id_ope
  select * from parametro
  
  UPDATE PARAMETRO SET  VALOR = '02/2025'  WHERE  CHAVE = 'SELIC' 
+ 
+ 
+ select * from nfe_det_trade where id_operacao = 'B'
+ 
+ 
+ /*
+ 
+ Validação de bonificações não aproveitadas
+ 
+8625382509	5910	1010808	CERV CRY PILS LT 269ML PAC C/12	38	38	26/01/2017
+8625577833	5910	1010934	CERV ITA PILS LN 355ML PAC C/12	20	20	30/01/2017
+8625655491	5910	1010808	CERV CRY PILS LT 269ML PAC C/12	19	19	31/01/2017
+8625300612	5910	1010799	CERV CRY PILS GRF RET 600ML CX C/24	3	3	25/01/2017
+ 
+ */
+ 
+ //select * from nfe_det_trade where nro_doc = '8625655491' and material = '1010808' and dt_ref <= '2017-01-26' and id_operacao = 'V'

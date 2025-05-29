@@ -220,7 +220,7 @@ namespace Trade_GP.Dao.postgre
                 {
                     using (var objCommand = new NpgsqlCommand(StringUpdate, objConexao))
                     {
-                        
+
                         objConexao.Open();
 
                         var objDataReader = objCommand.ExecuteReader();
@@ -743,7 +743,7 @@ namespace Trade_GP.Dao.postgre
             return lista;
 
         }
-        
+
         public async Task<List<ContadorModel>> Conta_Nfe_ValoresByDay(int id_grupo, string cod_emp, string local, string periodo)
         {
 
@@ -849,7 +849,7 @@ namespace Trade_GP.Dao.postgre
                                 "        , ven.cod_emp as cod_emp  " +
                                 "        ,ven.local,cli.cnpj_cpf as cnpj " +
                                 "        ,case " +
-                               $"          when {mes} then to_char(ven.dt_ref,'MM')  " + 
+                               $"          when {mes} then to_char(ven.dt_ref,'MM')  " +
                                 "          else '' " +
                                 "        end as mes " +
                                 "        ,to_char(ven.dt_ref, 'YYYY') as ano " +
@@ -871,7 +871,7 @@ namespace Trade_GP.Dao.postgre
                                 "          when false then to_char(ven.dt_ref,'MM')           " +
                                 "          else ''                                            " +
                                 "         end                                                 " +
-                                "        ,to_char(ven.dt_ref, 'YYYY')";                       
+                                "        ,to_char(ven.dt_ref, 'YYYY')";
 
             string strStringConexao = DataBase.RunCommand.connectionString;
 
@@ -1750,11 +1750,11 @@ namespace Trade_GP.Dao.postgre
 
         public void UpdateBYPlanilhaLinha(BoniNota nota)
         {
-            
+
             String StringUpdate = $" UPDATE nfe_det_trade SET " +
             $"    boni_planilha                         = {nota.Boni_Planilha}   " +
             $"   ,boni_linha                            = {nota.Boni_Linha}   " +
-            
+
             $" WHERE ID_GRUPO = {nota.Id_Grupo} AND ID_PLANILHA =  {nota.Id_Planilha} AND NRO_LINHA = {nota.Nro_Linha}";
 
 
@@ -1768,7 +1768,7 @@ namespace Trade_GP.Dao.postgre
             {
                 MessageBox.Show(ex.Message, "Atenção!");
             }
-           
+
         }
 
         private BoniNota PopulaNfBoni(NpgsqlDataReader objDataReader)
@@ -1839,14 +1839,14 @@ namespace Trade_GP.Dao.postgre
 
         //Rotinas IPI
 
-        public async Task<int> bonixvenda_periodo(int id_grupo, string cod_emp, string local, string periodo,int _ano_selic, int _mes_selic)
+        public async Task<int> bonixvenda_periodo(int id_grupo, string cod_emp, string local, string periodo, int _ano_selic, int _mes_selic)
         {
             // Defina a string de conexão. Atualize com as informações do seu banco de dados.
             string connString = DataBase.RunCommand.connectionString;
 
 
             String StringProc = $"select * from bonixvenda_periodo({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic}) ";
-            
+
             int _saida = 0;
 
             using (var conn = new NpgsqlConnection(connString))
@@ -1915,15 +1915,122 @@ namespace Trade_GP.Dao.postgre
             return _saida;
         }
 
+        public async Task<List<ContadorModel>> Conta_Nfe_Saida_BoniByDayIPIVal(int id_grupo, string cod_emp, string local, string periodo)
+        {
+
+            List<ContadorModel> lista = new List<ContadorModel>();
+
+            String StringProc = "SELECT " +
+                                   "                            bon.id_grupo  " +
+                                   "                           ,bon.cod_emp   " +
+                                   "                           ,bon.local     " +
+                                   "                           ,bon.dt_ref    " +
+                                   "                           ,COALESCE(COUNT(bon.*), 0) AS TOTAL " +
+                                   "                   from     controle_e con " +
+                                   "                   inner join nfe_det_trade bon  on bon  .id_grupo = con.id_grupo and bon  .id_planilha = con.id_s and bon   .nro_linha = con.nro_linha_s " +
+                                   "                   inner join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha  = con.id_e and ven.nro_linha = con.nro_linha_e " +
+                                  $"                   where con.id_grupo = {id_grupo} and con.id_fechamento = 1  and con.qtd_e > 0 and bon.cod_emp = '{cod_emp}' and bon.LOCAL = '{local}'  and  (bon.STATUS = '1' OR bon.STATUS = '2') and  bon.ID_OPERACAO = 'B' and bon.dt_ref >= '2012-08-25' and  TO_CHAR(bon.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
+                                   "                   group by bon.id_grupo   " +
+                                   "                           ,bon.cod_emp    " +
+                                   "                           ,bon.local      " +
+                                   "                           ,bon.dt_ref     " +
+                                   "                   order by  bon.id_grupo  " +
+                                   "                           ,bon.cod_emp    " +
+                                   "                           ,bon.local      " +
+                                   "                           ,bon.dt_ref     ";
+
+            string strStringConexao = DataBase.RunCommand.connectionString;
+
+            await Task.Run(() =>
+            {
+                using (var objConexao = new NpgsqlConnection(strStringConexao))
+                {
+                    using (var objCommand = new NpgsqlCommand(StringProc, objConexao))
+                    {
+                        try
+                        {
+                            objConexao.Open();
+
+                            var objDataReader = objCommand.ExecuteReader();
+
+                            if (objDataReader.HasRows)
+                            {
+
+                                while (objDataReader.Read())
+                                {
+                                    ContadorModel contador = new ContadorModel();
+                                    contador.local = objDataReader["LOCAL"].ToString();
+                                    try
+                                    {
+                                        contador.notas = Convert.ToInt32(objDataReader["TOTAL"]);
+                                    }
+                                    catch
+                                    {
+                                        contador.notas = 0;
+                                    }
+                                    try
+                                    {
+                                        contador.dt_ref = Convert.ToDateTime(objDataReader["dt_ref"]);
+                                    }
+                                    catch
+                                    {
+                                        contador.dt_ref = DateTime.Now;
+                                    }
+                                    contador.ano = contador.dt_ref.Year;
+                                    contador.mes = contador.dt_ref.Month;
+                                    lista.Add(contador);
+                                }
+                            }
+
+                        }
+                        catch (NpgsqlException ex)
+                        {
+                            MessageBox.Show($"Erro no PostgreSQL: {ex.Message}");
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            MessageBox.Show($"Operação inválida: {ex.Message}");
+                        }
+                        catch (TimeoutException ex)
+                        {
+                            MessageBox.Show($"Tempo de espera esgotado: {ex.Message}");
+                        }
+                        catch (IOException ex)
+                        {
+                            MessageBox.Show($"Erro de I/O: {ex.Message}");
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            MessageBox.Show($"Argumento inválido: {ex.Message}");
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Erro inesperado: {ex.Message}");
+                        }
+                        finally
+                        {
+                            objConexao.Dispose();
+                        }
+                    }
+                }
+
+            });
+
+            return lista;
+
+        }
+
+
         public async Task<List<ContadorModel>> Conta_Nfe_Saida_BoniByDayIPI(int id_grupo, string cod_emp, string local, string periodo)
         {
+
 
             List<ContadorModel> lista = new List<ContadorModel>();
 
             String StringProc = "SELECT det.id_grupo,det.cod_emp,det.local,det.dt_ref,COALESCE(COUNT(det.*), 0) AS TOTAL  FROM nfe_det_trade DET " +
                                $"WHERE DET.id_grupo = {id_grupo} and DET.cod_emp = '{cod_emp}' and Det.local IN ('{local}') and " +
-                                "  ((det.id_operacao = 'B')  and (det.status = '1' or det.status = '2')) and  " +
-                               $"  TO_CHAR(det.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
+                                "  ((det.id_operacao = 'B')  and (det.status = '0')) and  " +
+                               $"  det.dt_ref >= '2012-08-25' and TO_CHAR(det.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
                                 " group by det.id_grupo,det.cod_emp,det.local,det.dt_ref " +
                                 " order by det.id_grupo,det.cod_emp,det.local,det.dt_ref ";
 

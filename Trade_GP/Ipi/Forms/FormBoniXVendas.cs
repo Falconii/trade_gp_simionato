@@ -821,7 +821,7 @@ namespace Trade_GP.Ipi.Forms
 
                 tar.Status = $"Processado {elapsedTime}";
 
-                tar.Observacao = $"Total NOTAS: {_saida_nota} PERIODO: {_saida_periodo} GERAL: {_saida_total_dia}";
+                tar.Observacao = $"NOTAS: {_saida_nota} PERIODO: {_saida_periodo} TOTAL: {_saida_total_dia}";
 
                 _total_notas += _saida_total_dia;
 

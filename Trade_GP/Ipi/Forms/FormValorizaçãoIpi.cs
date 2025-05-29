@@ -365,7 +365,7 @@ namespace Trade_GP.Ipi.Forms
 
                 periodos = string.Join("','", Parametros[0].Periodos.Select(p => p.Data));
 
-                contadores = await dao.Conta_Nfe_Saida_BoniByDayIPI(1, Parametros[0].Cod_Emp, locais, periodos);
+                contadores = await dao.Conta_Nfe_Saida_BoniByDayIPIVal(1, Parametros[0].Cod_Emp, locais, periodos);
 
             }
             finally

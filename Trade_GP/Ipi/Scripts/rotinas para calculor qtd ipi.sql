@@ -54,6 +54,8 @@ AS $function$ DECLARE
         
         BEGIN
 
+           data_inicial := Date '2012-08-25';
+           
           _saida := 0;
           
           __saldo_f := 0;
@@ -95,7 +97,7 @@ AS $function$ DECLARE
                     det.status       ,
                     det.bebida
               FROM   nfe_det_trade DET
-              WHERE  DET.id_grupo = _id_grupo and DET.cod_emp = _cod_emp and DET.local = _local  and det.id_operacao = 'B' and to_char(det.dt_ref,'DD/MM/YYYY') = _dia_mes_ano and det.status = '0' and det.saldo > 0
+              WHERE  DET.id_grupo = _id_grupo and DET.cod_emp = _cod_emp and DET.local = _local  and det.id_operacao = 'B' and  DET.dt_ref >= data_inicial  and to_char(det.dt_ref,'DD/MM/YYYY') = _dia_mes_ano and det.status = '0' and det.saldo > 0
               ORDER BY det.id_grupo,det.cod_emp,det.local,DET.dt_ref ,DET.nro_doc,DET.nro_item 
 
               LOOP      
@@ -103,7 +105,7 @@ AS $function$ DECLARE
                      __qtd_venda := 0;
                      __ipi_unit  := tempo.ipi_vlr / tempo.quantidade_1;
                      
-                     RAISE NOTICE 'Tempo.bebida % ', tempo.bebida;
+                    // RAISE NOTICE 'Tempo.bebida % ', tempo.bebida;
 
                     // Propria nota
                     select cli.cnpj_cpf from clientes cli into __cnpj_empresa where cli.id_grupo = _id_grupo and cli.cod_empresa = _cod_emp and cli.local = _local;
@@ -112,12 +114,14 @@ AS $function$ DECLARE
                           RAISE NOTICE 'Saiu Bonificação Propria ';
                           update nfe_det_trade set status = '4'
                            where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                           _saida := _saida + 1;
                          continue;
                     end if;
                     if (  tempo.bebida = 'N') then 
                           RAISE NOTICE 'Saiu Por Não Ser Bebida ';
                           update nfe_det_trade set status = '3'
                            where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                           _saida := _saida + 1;
                          continue;
                     end if ;
 
@@ -127,7 +131,7 @@ AS $function$ DECLARE
                     if (__total_intercompany = 0) then
                          __status :=  '1';
                     else 
-                          __status :=  '1';
+                          __status :=  '2';
                     end if;
                     
                    //Dentro da nota
@@ -143,7 +147,7 @@ AS $function$ DECLARE
                               and  nota.nro_doc = bon.nro_doc  and nota.ipi_vlr > 0
                     where  bon.id_grupo = _id_grupo and bon.id_planilha  = tempo.id_planilha and bon.nro_linha = tempo.nro_linha limit 1;
 
-                    RAISE NOTICE '__id_planilha_v % __nro_linha_v % Venda % ' , __id_planilha_v , __nro_linha_v , __qtd_venda;
+                    //RAISE NOTICE '__id_planilha_v % __nro_linha_v % Venda % ' , __id_planilha_v , __nro_linha_v , __qtd_venda;
                                
                     if (__qtd_venda is not null) then
             
@@ -183,19 +187,20 @@ AS $function$ DECLARE
                                 
                                INSERT INTO nfe_det_trade_val_ipi(id_grupo,id,nro_linha,id_planilha_entrada,nro_linha_entrada,dtnfe,dtcredito,vlr_economico_ipi,dtfcorrecao,vlr_economico_ipi_corrigido,taxa,ipi_unit,qtd_calculada,usuarioinclusao,usuarioatualizacao) VALUES
                                                                  (_id_grupo,tempo.id_planilha,tempo.nro_linha, __id_planilha_v, __nro_linha_v,tempo.dt_ref,'2025-05-22',__ipi_economico,'2025-05-22',__ipi_economico_corrigido,__taxa,__ipi_unit,__qtd_usada,16,0);
+                        else 
+                               __saldo_f := tempo.saldo;                                                          
                         end if;
                         
                         if (__saldo_f = 0) then
                                update nfe_det_trade set saldo = __saldo_f , status = __status
                                where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                               _saida := _saida + 1;
                         else 
                                update nfe_det_trade set saldo = __saldo_f , status = '0'
                                where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
                         end if;
 
                 end if;
-
-                _saida := _saida + 1;
  
                   
               END LOOP;
@@ -326,9 +331,7 @@ AS $function$
             __taxa  := 0;
 
             SELECT get_selic FROM into __taxa get_selic( cast(to_char(_data,'YYYY') AS INT4), cast(to_char(_data,'MM') AS INT4) ,_ano_selic,_mes_selic) ;
-            
-            RAISE NOTICE 'Ponto A';
-             
+                         
             FOR vendas in  
             SELECT det.id_grupo, det.id_planilha , det.nro_linha, det.dt_ref, det.saldo, det.radical_cnpj
                FROM NFE_DET_TRADE DET
@@ -339,8 +342,8 @@ AS $function$
                ORDER BY DET.cod_emp,DET.local,DET.material,DET.dt_ref 
             LOOP     
             
-                    RAISE NOTICE 'id_grupo: %, id_planilha: %, nro_linha: %, saldo : % data %', 
-                    vendas.id_grupo, vendas.id_planilha, vendas.nro_linha, vendas.saldo, vendas.dt_ref;
+                    //RAISE NOTICE 'id_grupo: %, id_planilha: %, nro_linha: %, saldo : % data %', 
+                    //vendas.id_grupo, vendas.id_planilha, vendas.nro_linha, vendas.saldo, vendas.dt_ref;
                      
                     __dias :=  _data - vendas.dt_ref ;
                     
@@ -448,7 +451,7 @@ AS $function$ DECLARE
           
           __saldo_f := 0;
           
-          data_inicial := Date '2012-07-25';
+          data_inicial := Date '2012-08-25';
           
           FOR tempo in  
      
@@ -480,15 +483,17 @@ AS $function$ DECLARE
                   select cli.cnpj_cpf from clientes cli into __cnpj_empresa where cli.id_grupo = _id_grupo and cli.cod_empresa = _cod_emp and cli.local = _local;
                     
                   if (  __cnpj_empresa = tempo.cnpj_cpf) then 
-                          RAISE NOTICE 'Saiu Bonificação Propria ';
+                          //RAISE NOTICE 'Saiu Bonificação Propria ';
                           update nfe_det_trade set status = '4'
                            where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                           _saida := _saida + 1;
                          continue;
                   end if ;
                   if (  tempo.bebida = 'N' ) then 
-                          RAISE NOTICE 'Saiu Por Não Ser Bebida ';
+                          //RAISE NOTICE 'Saiu Por Não Ser Bebida ';
                           update nfe_det_trade set status = '3'
                            where id_grupo = tempo.id_grupo and id_planilha = tempo.id_planilha and nro_linha = tempo.nro_linha;
+                           _saida := _saida + 1;
                          continue;
                   end if ;
          
