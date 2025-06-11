@@ -47,6 +47,8 @@ namespace Trade_GP.Ipi.Forms
             this.lblCancelamentoAtivado = new System.Windows.Forms.Label();
             this.dbMeses = new System.Windows.Forms.DataGridView();
             this.dtGridLog = new System.Windows.Forms.DataGridView();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cbVendas = new System.Windows.Forms.ComboBox();
             this.gbParametros.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dbLocais)).BeginInit();
             this.gbMensaProcessamento.SuspendLayout();
@@ -121,6 +123,8 @@ namespace Trade_GP.Ipi.Forms
             this.gbMensaProcessamento.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbMensaProcessamento.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.gbMensaProcessamento.Controls.Add(this.label2);
+            this.gbMensaProcessamento.Controls.Add(this.cbVendas);
             this.gbMensaProcessamento.Controls.Add(this.label1);
             this.gbMensaProcessamento.Controls.Add(this.cbSelic);
             this.gbMensaProcessamento.Controls.Add(this.btNovo);
@@ -140,7 +144,7 @@ namespace Trade_GP.Ipi.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 96);
+            this.label1.Location = new System.Drawing.Point(341, 90);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 17);
@@ -154,10 +158,10 @@ namespace Trade_GP.Ipi.Forms
             "01/2025",
             "02/2025",
             "03/2025"});
-            this.cbSelic.Location = new System.Drawing.Point(11, 119);
+            this.cbSelic.Location = new System.Drawing.Point(345, 113);
             this.cbSelic.Margin = new System.Windows.Forms.Padding(4);
             this.cbSelic.Name = "cbSelic";
-            this.cbSelic.Size = new System.Drawing.Size(574, 24);
+            this.cbSelic.Size = new System.Drawing.Size(246, 24);
             this.cbSelic.TabIndex = 8;
             // 
             // btNovo
@@ -274,6 +278,28 @@ namespace Trade_GP.Ipi.Forms
             this.dtGridLog.Size = new System.Drawing.Size(1212, 320);
             this.dtGridLog.TabIndex = 77;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(7, 90);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(153, 17);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Pesquisar Vendas Por:";
+            // 
+            // cbVendas
+            // 
+            this.cbVendas.FormattingEnabled = true;
+            this.cbVendas.Items.AddRange(new object[] {
+            "CNPJ INTEIRO",
+            "RADICAL DO CNPJ"});
+            this.cbVendas.Location = new System.Drawing.Point(11, 113);
+            this.cbVendas.Margin = new System.Windows.Forms.Padding(4);
+            this.cbVendas.Name = "cbVendas";
+            this.cbVendas.Size = new System.Drawing.Size(246, 24);
+            this.cbVendas.TabIndex = 10;
+            // 
             // FormBoniXVendas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -324,5 +350,7 @@ namespace Trade_GP.Ipi.Forms
         private System.Windows.Forms.DataGridView dtGridLog;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbSelic;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox cbVendas;
     }
 }

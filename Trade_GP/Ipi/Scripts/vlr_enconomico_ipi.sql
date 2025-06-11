@@ -73,7 +73,7 @@ AS $function$
                 LOOP            
                                if (__taxa = 0 ) then
 
-								   SELECT get_selic FROM into __taxa get_selic( cast( to_char(notas.bon_dt_ref, 'YYYY') AS INT4), cast (to_char(notas.bon_dt_ref, 'MM') AS INT4),_ano_selic,_mes_selic);
+								   SELECT get_selic FROM get_selic( cast( to_char(notas.bon_dt_ref, 'YYYY') AS INT4), cast (to_char(notas.bon_dt_ref, 'MM') AS INT4),_ano_selic,_mes_selic) into __taxa ;
                                   
 								end if;
                                  

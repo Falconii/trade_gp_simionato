@@ -52,6 +52,9 @@ namespace Trade_GP.Ipi.Forms
 
         private void FormBoniXVendas_Load(object sender, EventArgs e)
         {
+
+            getParVendas();
+
             daoParametro dao = new daoParametro();
 
             Parametro par = new Parametro();
@@ -327,9 +330,19 @@ namespace Trade_GP.Ipi.Forms
 
             LoadDbGridLocais();
 
-            await LoadEscopo();
+            int total = await LoadEscopo();
 
-            status_pre_processamento();
+            if (total == 0)
+            {
+
+                MessageBox.Show("Nenhuma Nota Para Processar!");
+
+            } else
+            {
+
+                status_pre_processamento();
+
+            }
 
         }
 
@@ -450,6 +463,31 @@ namespace Trade_GP.Ipi.Forms
 
                     dao.Update(param);
 
+                } else
+                {
+                    param = new Parametro();
+                    param.Chave = "SELIC";
+                    param.Valor = cbSelic.SelectedItem as string;
+
+                    param = dao.Insert(param);
+                }
+
+                Parametro parVenda = dao.Seek("VENDAS");
+
+                if (!(parVenda == null))
+                {
+
+                    parVenda.Valor = cbVendas.SelectedItem as string;
+
+                    dao.Update(parVenda);
+
+                } else
+                {
+                    parVenda = new Parametro();
+                    parVenda.Chave = "VENDAS";
+                    parVenda.Valor = cbVendas.SelectedItem as string;
+
+                    dao.Insert(parVenda);
                 }
 
                 Cancelar = false;
@@ -773,6 +811,8 @@ namespace Trade_GP.Ipi.Forms
 
             int _total_notas = 0;
 
+            string _filtro_cnpj = cbVendas.SelectedIndex == 0 ? "C" : "R";
+
             pgProcesso.Value = 0;
 
             daoNfeDetTrade daoDet = new daoNfeDetTrade();
@@ -803,7 +843,7 @@ namespace Trade_GP.Ipi.Forms
                         await Task.Delay(200);
                     });
 
-                    _saida_periodo      = await daoDet.bonixvenda_periodo(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, _ano_selic, _mes_selic);
+                    _saida_periodo      = await daoDet.bonixvenda_periodo(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, _ano_selic, _mes_selic, _filtro_cnpj);
 
                     _saida_total_dia    = _saida_nota + _saida_periodo;
 
@@ -885,6 +925,36 @@ namespace Trade_GP.Ipi.Forms
                     {
                         cbSelic.SelectedIndex = idx;
                     }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Falha Ao Carregar A Taxa Selic");
+            }
+
+        }
+
+        private void getParVendas()
+        {
+            try
+            {
+                daoParametro dao = new daoParametro();
+
+                Parametro parVendas = new Parametro();
+
+                parVendas = dao.Seek("VENDAS");
+
+                if (parVendas == null)
+                {
+                    cbVendas.SelectedIndex = 0;
+                } else
+                {
+                    int idx = 1;
+
+                    if (parVendas.Valor == "CNPJ INTEIRO") idx = 0;
+
+                    cbVendas.SelectedIndex = idx;
                 }
 
             }

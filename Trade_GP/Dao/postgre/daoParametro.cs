@@ -71,8 +71,8 @@ namespace Trade_GP.Dao.postgre
         {
 
             String StringUpdate = $" UPDATE PARAMETRO SET " +
-                    $" CHAVE = '{obj.Chave}' " +
-                    $"WHERE VALOR = '{obj.Valor}' ";
+                    $" VALOR = '{obj.Valor}' " +
+                    $"WHERE CHAVE = '{obj.Chave}' ";
 
             Console.WriteLine(StringUpdate);
 

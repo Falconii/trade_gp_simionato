@@ -1839,13 +1839,13 @@ namespace Trade_GP.Dao.postgre
 
         //Rotinas IPI
 
-        public async Task<int> bonixvenda_periodo(int id_grupo, string cod_emp, string local, string periodo, int _ano_selic, int _mes_selic)
+        public async Task<int> bonixvenda_periodo(int id_grupo, string cod_emp, string local, string periodo, int _ano_selic, int _mes_selic, string _filtro_cnpj)
         {
             // Defina a string de conexão. Atualize com as informações do seu banco de dados.
             string connString = DataBase.RunCommand.connectionString;
 
 
-            String StringProc = $"select * from bonixvenda_periodo({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic}) ";
+            String StringProc = $"select * from bonixvenda_periodo({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic},'{_filtro_cnpj}') ";
 
             int _saida = 0;
 
@@ -1921,23 +1921,24 @@ namespace Trade_GP.Dao.postgre
             List<ContadorModel> lista = new List<ContadorModel>();
 
             String StringProc = "SELECT " +
-                                   "                            bon.id_grupo  " +
-                                   "                           ,bon.cod_emp   " +
-                                   "                           ,bon.local     " +
-                                   "                           ,bon.dt_ref    " +
-                                   "                           ,COALESCE(COUNT(bon.*), 0) AS TOTAL " +
-                                   "                   from     controle_e con " +
-                                   "                   inner join nfe_det_trade bon  on bon  .id_grupo = con.id_grupo and bon  .id_planilha = con.id_s and bon   .nro_linha = con.nro_linha_s " +
-                                   "                   inner join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha  = con.id_e and ven.nro_linha = con.nro_linha_e " +
-                                  $"                   where con.id_grupo = {id_grupo} and con.id_fechamento = 1  and con.qtd_e > 0 and bon.cod_emp = '{cod_emp}' and bon.LOCAL = '{local}'  and  (bon.STATUS = '1' OR bon.STATUS = '2') and  bon.ID_OPERACAO = 'B' and bon.dt_ref >= '2012-08-25' and  TO_CHAR(bon.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
-                                   "                   group by bon.id_grupo   " +
-                                   "                           ,bon.cod_emp    " +
-                                   "                           ,bon.local      " +
-                                   "                           ,bon.dt_ref     " +
-                                   "                   order by  bon.id_grupo  " +
-                                   "                           ,bon.cod_emp    " +
-                                   "                           ,bon.local      " +
-                                   "                           ,bon.dt_ref     ";
+                                              "                            bon.id_grupo  " +
+                                              "                           ,bon.cod_emp   " +
+                                              "                           ,bon.local     " +
+                                              "                           ,bon.dt_ref    " +
+                                              "                           ,COALESCE(COUNT(bon.*), 0) AS TOTAL " +
+                                              "                   from     controle_e con " +
+                                              "                   inner join nfe_det_trade bon  on bon.id_grupo = con.id_grupo and bon.id_planilha = con.id_s and bon.nro_linha = con.nro_linha_s " +
+                                              "                   inner join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha  = con.id_e and ven.nro_linha = con.nro_linha_e " +
+                                             $"                   where con.id_grupo = {id_grupo} and con.id_fechamento = 1  and con.qtd_e > 0 and bon.cod_emp = '{cod_emp}' and bon.LOCAL in ('{local}')  and  (bon.STATUS = '1' OR bon.STATUS = '2') and  bon.ID_OPERACAO = 'B' and bon.dt_ref >= '2012-08-25' and  TO_CHAR(bon.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
+                                              "                   group by bon.id_grupo   " +
+                                              "                           ,bon.cod_emp    " +
+                                              "                           ,bon.local      " +
+                                              "                           ,bon.dt_ref     " +
+                                              "                   order by  bon.id_grupo  " +
+                                              "                           ,bon.cod_emp    " +
+                                              "                           ,bon.local      " +
+                                              "                           ,bon.dt_ref     ";
+
 
             string strStringConexao = DataBase.RunCommand.connectionString;
 
