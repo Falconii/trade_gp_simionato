@@ -288,6 +288,38 @@ CREATE INDEX controle_e_id_grupo_id_fec_id_e_nro_e
 	ON public.controle_e USING btree (id_grupo int4_ops, id_fechamento int4_ops, id_e int4_ops, nro_linha_e int4_ops)
 GO
 
+
+DROP TABLE IF EXISTS controle_e2;
+CREATE TABLE public.controle_e2  ( 
+    id_grupo        int4 NOT NULL,
+    id_fechamento   int4 NOT NULL,
+	id_s          	int4 NOT NULL,
+    nro_linha_s     int4 NOT NULL,
+    seq             serial NOT NULL,
+	id_e          	int4 NOT NULL,
+    nro_linha_e     int4 NOT NULL,
+    qtd_s           numeric(15,4) NULL,
+	qtd_e   	    numeric(15,4) NULL,
+    qtd_d           numeric(15,4) NULL,
+    sld_dev         numeric(15,4) NULL,
+    flag            char(1) default ' ',
+    metodo_qtd      char(1) default ' ',
+    metodo_pesquisa char(1) default ' ',
+    perc_boni       numeric(7,2) default 0,
+    perc_ven        numeric(7,2) default 0,
+    dias            int4,
+	PRIMARY KEY(id_grupo,id_fechamento,id_s,nro_linha_s,id_e,nro_linha_e)
+)
+WITHOUT OIDS 
+TABLESPACE "Producao"
+GO
+CREATE INDEX controle_e_id_grupo_id_fec_id_e_nro_e2
+	ON public.controle_e2 USING btree (id_grupo int4_ops, id_fechamento int4_ops, id_e int4_ops, nro_linha_e int4_ops)
+GO
+
+
+
+
 DROP TABLE IF EXISTS fechamento;
 CREATE TABLE public.fechamento  ( 
 	id_grupo        int4 NOT NULL,
@@ -378,6 +410,30 @@ CREATE TABLE public.nfe_det_trade_val_ipi  (
 WITHOUT OIDS 
 TABLESPACE "Producao"
 GO
+
+DROP TABLE IF EXISTS nfe_det_trade_val_ipi2;
+CREATE TABLE public.nfe_det_trade_val_ipi2  ( 
+    id_grupo                        int4 NOT NULL,
+	id                            	int4 NOT NULL,
+	nro_linha                     	int4 NOT NULL,
+    id_planilha_entrada             int4 NOT NULL,
+    nro_linha_entrada               int4 NOT NULL,
+	dtnfe                         	date NOT NULL,
+	dtcredito                     	date NULL,
+	vlr_economico_ipi             	numeric(18,4) NULL,
+	dtfcorrecao                   	date NULL,
+	vlr_economico_ipi_corrigido   	numeric(18,4) NULL,
+	taxa                          	numeric(7,2) NULL,
+    ipi_unit                        numeric(15,4) NULL,
+    qtd_calculada                   numeric(15,4) NULL,
+	usuarioinclusao               	int4 NULL,
+	usuarioatualizacao            	int4 NULL,
+	PRIMARY KEY(id_grupo,id,nro_linha,id_planilha_entrada,nro_linha_entrada)
+)
+WITHOUT OIDS 
+TABLESPACE "Producao"
+GO
+
 
 
 DROP TABLE IF EXISTS cont_cab_proc;

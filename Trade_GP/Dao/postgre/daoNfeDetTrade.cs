@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Trade_GP.Ipi.Util;
 using Trade_GP.Models;
 using Trade_GP.Util;
 
@@ -744,16 +745,18 @@ namespace Trade_GP.Dao.postgre
 
         }
 
-        public async Task<List<ContadorModel>> Conta_Nfe_ValoresByDay(int id_grupo, string cod_emp, string local, string periodo)
+        public async Task<List<ContadorModel>> Conta_Nfe_ValoresByDay(int id_grupo, string cod_emp, string local, string periodo, Boolean troca_valor)
         {
 
             List<ContadorModel> lista = new List<ContadorModel>();
 
+            String Sql_Troca_Valor = troca_valor ? $" and pauta_invertida = 'S' " : "";
 
-            String StringProc = "SELECT             ven.id_grupo,ven.cod_emp,ven.local,ven.dt_ref,COALESCE(COUNT(ven.*), 0) AS TOTAL  " +
+
+            String StringProc = "SELECT ven.id_grupo,ven.cod_emp,ven.local,ven.dt_ref,COALESCE(COUNT(ven.*), 0) AS TOTAL  " +
                                 "  from controle_e con " +
                                 "  inner " +
-                                "  join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha = con.id_s and ven.nro_linha = con.nro_linha_s " +
+                               $"  join nfe_det_trade ven on ven.id_grupo = con.id_grupo and ven.id_planilha = con.id_s and ven.nro_linha = con.nro_linha_s {Sql_Troca_Valor} " +
                                 "  inner join nfe_det_trade ent on ent.id_grupo = con.id_grupo and ent.id_planilha = con.id_e and ent.nro_linha = con.nro_linha_e " +
                                $"  where con.id_grupo = {id_grupo} and con.id_fechamento = 1 and con.qtd_e > 0 and VEN.cod_emp = '{cod_emp}' and VEN.LOCAL IN ('{local}')  and ven.dt_ref >= '2017-03-16' and to_char(VEN.dt_ref,'MM/YYYY')  IN ('{periodo}')  and VEN.STATUS = '1' and VEN.ID_OPERACAO = 'S'  and con.id_fechamento = 1 " +
                                 "  group by ven.id_grupo,ven.cod_emp,ven.local,ven.dt_ref " +
@@ -1243,7 +1246,59 @@ namespace Trade_GP.Dao.postgre
             return _saida;
 
         }
+        public async Task<int> vlr_enconomico_v3_troca(int id_grupo, string cod_emp, string local, string periodo, int ano_selic, int mes_selic)
+        {
 
+            int _saida = 0;
+
+            String StringProc = $"select * from vlr_enconomico_v3_troca({id_grupo},'{cod_emp}','{local}','{periodo}', {ano_selic},{mes_selic}) ";
+
+            string strStringConexao = DataBase.RunCommand.connectionString;
+
+            await Task.Run(() =>
+            {
+                using (var objConexao = new NpgsqlConnection(strStringConexao))
+                {
+                    using (var objCommand = new NpgsqlCommand(StringProc, objConexao))
+                    {
+                        try
+                        {
+                            objConexao.Open();
+
+                            var objDataReader = objCommand.ExecuteReader();
+
+                            if (objDataReader.HasRows)
+                            {
+
+                                while (objDataReader.Read())
+                                {
+
+                                    _saida = Convert.ToInt32(objDataReader["_saida"]);
+
+                                }
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Atenção!");
+
+                            _saida = -1;
+                        }
+                        finally
+                        {
+                            objConexao.Dispose();
+                        }
+                    }
+                }
+
+            });
+
+            return _saida;
+
+        }
+
+        
         public async Task<int> Vlr_Economico_IPI(int id_grupo, string cod_emp, string local, string periodo, int ano_selic, int mes_selic)
         {
 
@@ -1839,13 +1894,22 @@ namespace Trade_GP.Dao.postgre
 
         //Rotinas IPI
 
-        public async Task<int> bonixvenda_periodo(int id_grupo, string cod_emp, string local, string periodo, int _ano_selic, int _mes_selic, string _filtro_cnpj)
+        public async Task<int> bonixvenda_periodo(int id_grupo, string cod_emp, string local, string periodo, int _ano_selic, int _mes_selic, string _filtro_cnpj, TipoCalculo tipoCalculo)
         {
             // Defina a string de conexão. Atualize com as informações do seu banco de dados.
             string connString = DataBase.RunCommand.connectionString;
 
+            String StringProc = "";
 
-            String StringProc = $"select * from bonixvenda_periodo({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic},'{_filtro_cnpj}') ";
+            if (tipoCalculo == TipoCalculo.calculo_60_40)
+            {
+                StringProc = $"select * from bonixvenda_periodo({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic},'{_filtro_cnpj}') ";
+
+            } else
+            {
+                StringProc = $"select * from bonixvenda_periodo2({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic},'{_filtro_cnpj}') ";
+
+            }
 
             int _saida = 0;
 
@@ -1877,13 +1941,20 @@ namespace Trade_GP.Dao.postgre
             return _saida;
         }
 
-        public async Task<int> bonixvenda_nota(int id_grupo, string cod_emp, string local, string periodo, int _ano_selic, int _mes_selic)
+        public async Task<int> bonixvenda_nota(int id_grupo, string cod_emp, string local, string periodo, int _ano_selic, int _mes_selic, TipoCalculo tipoCalculo)
         {
             // Defina a string de conexão. Atualize com as informações do seu banco de dados.
             string connString = DataBase.RunCommand.connectionString;
 
+            String StringProc = "";
 
-            String StringProc = $"select * from bonixvenda_nota({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic}) ";
+            if (tipoCalculo == TipoCalculo.calculo_60_40)
+            {
+                StringProc = $"select * from bonixvenda_nota({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic}) ";
+            } else
+            {
+                StringProc = $"select * from bonixvenda_nota2({id_grupo},'{cod_emp}','{local}','{periodo}',1,{_ano_selic},{_mes_selic}) ";
+            }
 
             int _saida = 0;
 
@@ -2022,16 +2093,18 @@ namespace Trade_GP.Dao.postgre
         }
 
 
-        public async Task<List<ContadorModel>> Conta_Nfe_Saida_BoniByDayIPI(int id_grupo, string cod_emp, string local, string periodo)
+        public async Task<List<ContadorModel>> Conta_Nfe_Saida_BoniByDayIPI(int id_grupo, string cod_emp, string local, string periodo, TipoCalculo tipoCalculo)
         {
 
 
             List<ContadorModel> lista = new List<ContadorModel>();
 
+            string filtro = tipoCalculo == TipoCalculo.calculo_60_40 ? "  ((det.id_operacao = 'B')  and (det.status = '0')) and  "  : " ((det.id_operacao = 'B')  and (det.status2 = '0')) and ";
+
             String StringProc = "SELECT det.id_grupo,det.cod_emp,det.local,det.dt_ref,COALESCE(COUNT(det.*), 0) AS TOTAL  FROM nfe_det_trade DET " +
                                $"WHERE DET.id_grupo = {id_grupo} and DET.cod_emp = '{cod_emp}' and Det.local IN ('{local}') and " +
-                                "  ((det.id_operacao = 'B')  and (det.status = '0')) and  " +
-                               $"  det.dt_ref >= '2012-08-25' and TO_CHAR(det.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
+                                 filtro +
+                               $"  det.dt_ref >= '2012-07-25' and TO_CHAR(det.dt_ref, 'MM/YYYY') IN ('{periodo}') " +
                                 " group by det.id_grupo,det.cod_emp,det.local,det.dt_ref " +
                                 " order by det.id_grupo,det.cod_emp,det.local,det.dt_ref ";
 

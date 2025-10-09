@@ -41,13 +41,14 @@ namespace Trade_GP
             this.Importacao5405 = new System.Windows.Forms.ToolStripMenuItem();
             this.importacao5910 = new System.Windows.Forms.ToolStripMenuItem();
             this.importarTXT5910 = new System.Windows.Forms.ToolStripMenuItem();
-            this.consultas5405 = new System.Windows.Forms.ToolStripMenuItem();
             this.processamentos5405 = new System.Windows.Forms.ToolStripMenuItem();
             this.validaçãoDevuluçõesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.atualizaçãoVrlEconômicoSELICToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aproveitamentoIMPOSTOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.consultas5405 = new System.Windows.Forms.ToolStripMenuItem();
             this.relatórios5405 = new System.Windows.Forms.ToolStripMenuItem();
             this.analíticoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.processamento5910 = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,6 +64,7 @@ namespace Trade_GP
             this.RelatorioAnaliticoIPI = new System.Windows.Forms.ToolStripMenuItem();
             this.menuJanelas = new System.Windows.Forms.ToolStripMenuItem();
             this.sobreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,8 +75,8 @@ namespace Trade_GP
             this.cadastrosToolStripMenuItem,
             this.importação5405,
             this.importacao5910,
-            this.consultas5405,
             this.processamentos5405,
+            this.consultas5405,
             this.relatórios5405,
             this.processamento5910,
             this.importaçãoIPI,
@@ -173,19 +175,13 @@ namespace Trade_GP
             this.importarTXT5910.Text = "Importar TXT";
             this.importarTXT5910.Click += new System.EventHandler(this.importarTXT5910_Click);
             // 
-            // consultas5405
-            // 
-            this.consultas5405.Name = "consultas5405";
-            this.consultas5405.Size = new System.Drawing.Size(86, 24);
-            this.consultas5405.Text = "Consultas";
-            this.consultas5405.Visible = false;
-            // 
             // processamentos5405
             // 
             this.processamentos5405.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.validaçãoDevuluçõesToolStripMenuItem,
             this.toolStripMenuItem3,
             this.toolStripMenuItem2,
+            this.toolStripMenuItem4,
             this.atualizaçãoVrlEconômicoSELICToolStripMenuItem,
             this.aproveitamentoIMPOSTOToolStripMenuItem});
             this.processamentos5405.Name = "processamentos5405";
@@ -195,28 +191,35 @@ namespace Trade_GP
             // validaçãoDevuluçõesToolStripMenuItem
             // 
             this.validaçãoDevuluçõesToolStripMenuItem.Name = "validaçãoDevuluçõesToolStripMenuItem";
-            this.validaçãoDevuluçõesToolStripMenuItem.Size = new System.Drawing.Size(327, 26);
+            this.validaçãoDevuluçõesToolStripMenuItem.Size = new System.Drawing.Size(378, 26);
             this.validaçãoDevuluçõesToolStripMenuItem.Text = "Validação Devoluções";
             this.validaçãoDevuluçõesToolStripMenuItem.Click += new System.EventHandler(this.validaçãoDevuluçõesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(327, 26);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(378, 26);
             this.toolStripMenuItem3.Text = "Processamento Estoque Lote Diário";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(327, 26);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(378, 26);
             this.toolStripMenuItem2.Text = "Cálculo Valor Econômico Por Lote";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(378, 26);
+            this.toolStripMenuItem4.Text = "Calculo Valor Econômico Por Lote \"TROCA\"";
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click_1);
             // 
             // atualizaçãoVrlEconômicoSELICToolStripMenuItem
             // 
             this.atualizaçãoVrlEconômicoSELICToolStripMenuItem.Name = "atualizaçãoVrlEconômicoSELICToolStripMenuItem";
-            this.atualizaçãoVrlEconômicoSELICToolStripMenuItem.Size = new System.Drawing.Size(327, 26);
+            this.atualizaçãoVrlEconômicoSELICToolStripMenuItem.Size = new System.Drawing.Size(378, 26);
             this.atualizaçãoVrlEconômicoSELICToolStripMenuItem.Text = "Atualização Vrl Econômico SELIC";
             this.atualizaçãoVrlEconômicoSELICToolStripMenuItem.Visible = false;
             this.atualizaçãoVrlEconômicoSELICToolStripMenuItem.Click += new System.EventHandler(this.atualizaçãoVrlEconômicoSELICToolStripMenuItem_Click);
@@ -224,9 +227,16 @@ namespace Trade_GP
             // aproveitamentoIMPOSTOToolStripMenuItem
             // 
             this.aproveitamentoIMPOSTOToolStripMenuItem.Name = "aproveitamentoIMPOSTOToolStripMenuItem";
-            this.aproveitamentoIMPOSTOToolStripMenuItem.Size = new System.Drawing.Size(327, 26);
+            this.aproveitamentoIMPOSTOToolStripMenuItem.Size = new System.Drawing.Size(378, 26);
             this.aproveitamentoIMPOSTOToolStripMenuItem.Text = "Aproveitamento IMPOSTO";
             this.aproveitamentoIMPOSTOToolStripMenuItem.Visible = false;
+            // 
+            // consultas5405
+            // 
+            this.consultas5405.Name = "consultas5405";
+            this.consultas5405.Size = new System.Drawing.Size(86, 24);
+            this.consultas5405.Text = "Consultas";
+            this.consultas5405.Visible = false;
             // 
             // relatórios5405
             // 
@@ -283,7 +293,7 @@ namespace Trade_GP
             // importaçãoTXTIpiClick
             // 
             this.importaçãoTXTIpiClick.Name = "importaçãoTXTIpiClick";
-            this.importaçãoTXTIpiClick.Size = new System.Drawing.Size(224, 26);
+            this.importaçãoTXTIpiClick.Size = new System.Drawing.Size(219, 26);
             this.importaçãoTXTIpiClick.Text = "Importação TXT Ipi";
             this.importaçãoTXTIpiClick.Click += new System.EventHandler(this.importaçãoTXTIpiClick_Click);
             // 
@@ -291,6 +301,7 @@ namespace Trade_GP
             // 
             this.ProcessamentoIpi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem5,
+            this.toolStripMenuItem7,
             this.toolStripMenuItem6});
             this.ProcessamentoIpi.Name = "ProcessamentoIpi";
             this.ProcessamentoIpi.Size = new System.Drawing.Size(143, 24);
@@ -299,8 +310,8 @@ namespace Trade_GP
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(278, 26);
-            this.toolStripMenuItem5.Text = "Cruzamento Bonif. X Vendas";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(321, 26);
+            this.toolStripMenuItem5.Text = "Cruzamento Bonif. X Vendas 60x40";
             this.toolStripMenuItem5.Click += new System.EventHandler(this.cruzamentoBonifXVendas_Click);
             // 
             // toolStripMenuItem6
@@ -337,6 +348,13 @@ namespace Trade_GP
             this.sobreToolStripMenuItem.Size = new System.Drawing.Size(62, 24);
             this.sobreToolStripMenuItem.Text = "Sobre";
             this.sobreToolStripMenuItem.Click += new System.EventHandler(this.sobreToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem7
+            // 
+            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(321, 26);
+            this.toolStripMenuItem7.Text = "Cruzamento Bonif. X Vendas 70x30";
+            this.toolStripMenuItem7.Click += new System.EventHandler(this.toolStripMenuItem7_Click);
             // 
             // FormPrincipal
             // 
@@ -394,6 +412,8 @@ namespace Trade_GP
         private System.Windows.Forms.ToolStripMenuItem ProcessamentoIpi;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
     }
 }
 

@@ -40,6 +40,7 @@ namespace Trade_GP
             this.lblTarefas = new System.Windows.Forms.Label();
             this.dtGridLog = new System.Windows.Forms.DataGridView();
             this.gbMensaProcessamento = new System.Windows.Forms.GroupBox();
+            this.btNovo = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.cbSelic = new System.Windows.Forms.ComboBox();
             this.lblTipoProc = new System.Windows.Forms.Label();
@@ -48,7 +49,6 @@ namespace Trade_GP
             this.lblProcesso = new System.Windows.Forms.Label();
             this.pgProcesso = new System.Windows.Forms.ProgressBar();
             this.btProcessar = new System.Windows.Forms.Button();
-            this.btNovo = new System.Windows.Forms.Button();
             this.gbParametros.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dbLocais)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dbMeses)).BeginInit();
@@ -62,10 +62,10 @@ namespace Trade_GP
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitulo.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitulo.ForeColor = System.Drawing.Color.Blue;
-            this.lblTitulo.Location = new System.Drawing.Point(-4, 25);
+            this.lblTitulo.Location = new System.Drawing.Point(12, 9);
             this.lblTitulo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(2065, 28);
+            this.lblTitulo.Size = new System.Drawing.Size(1815, 28);
             this.lblTitulo.TabIndex = 62;
             this.lblTitulo.Text = "Cálculo Do Valor Ecômico Por Lote";
             this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -204,6 +204,18 @@ namespace Trade_GP
             this.gbMensaProcessamento.TabStop = false;
             this.gbMensaProcessamento.Text = "Atenção";
             // 
+            // btNovo
+            // 
+            this.btNovo.Location = new System.Drawing.Point(420, 159);
+            this.btNovo.Margin = new System.Windows.Forms.Padding(4);
+            this.btNovo.Name = "btNovo";
+            this.btNovo.Size = new System.Drawing.Size(135, 28);
+            this.btNovo.TabIndex = 8;
+            this.btNovo.Tag = "0";
+            this.btNovo.Text = "Novo Proc.";
+            this.btNovo.UseVisualStyleBackColor = true;
+            this.btNovo.Click += new System.EventHandler(this.btNovo_Click);
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -218,9 +230,8 @@ namespace Trade_GP
             // 
             this.cbSelic.FormattingEnabled = true;
             this.cbSelic.Items.AddRange(new object[] {
-            "01/2025",
-            "02/2025",
-            "03/2025"});
+            "09/2025",
+            "08/2025"});
             this.cbSelic.Location = new System.Drawing.Point(253, 119);
             this.cbSelic.Margin = new System.Windows.Forms.Padding(4);
             this.cbSelic.Name = "cbSelic";
@@ -289,18 +300,6 @@ namespace Trade_GP
             this.btProcessar.Text = "Processamento";
             this.btProcessar.UseVisualStyleBackColor = true;
             this.btProcessar.Click += new System.EventHandler(this.btProcessar_Click);
-            // 
-            // btNovo
-            // 
-            this.btNovo.Location = new System.Drawing.Point(420, 159);
-            this.btNovo.Margin = new System.Windows.Forms.Padding(4);
-            this.btNovo.Name = "btNovo";
-            this.btNovo.Size = new System.Drawing.Size(135, 28);
-            this.btNovo.TabIndex = 8;
-            this.btNovo.Tag = "0";
-            this.btNovo.Text = "Novo Proc.";
-            this.btNovo.UseVisualStyleBackColor = true;
-            this.btNovo.Click += new System.EventHandler(this.btNovo_Click);
             // 
             // FormVlrEconomicoLotes
             // 

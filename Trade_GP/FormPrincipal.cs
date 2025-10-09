@@ -13,6 +13,7 @@ using Trade_GP.Ipi.Forms;
 using Trade_GP.Models;
 using Trade_GP.Util;
 using Trade_GP.DataBase;
+using Trade_GP.Ipi.Util;
 
 namespace Trade_GP
 {
@@ -73,7 +74,7 @@ namespace Trade_GP
         private void configuraMenu(string projeto)
         {
 
-            if (projeto == "IPI")
+            if (projeto.Contains("IPI"))
             {
                 /* Pis_Cofins_5405 */
                 importação5405.Visible = false;
@@ -88,7 +89,7 @@ namespace Trade_GP
                 ProcessamentoIpi.Visible = true;
                 RelatorioIPI.Visible = true;
             } else
-             if (projeto == "Pis_Cofins_5405")
+             if (projeto == "Pis_Cofins_5405_1002")
             {
                 /* Pis_Cofins_5405 */
                 importação5405.Visible = true;
@@ -425,6 +426,32 @@ namespace Trade_GP
         {
 
             FormValorizaçãoIpi form = new FormValorizaçãoIpi();
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
+
+        private void toolStripMenuItem4_Click_1(object sender, EventArgs e)
+        {
+            var form = new FormVlrEconomicoLotes(true);
+
+            ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
+
+            form.MdiParent = this;
+
+            form.menu = (ToolStripMenuItem)sender;
+
+            form.Show();
+        }
+
+        private void toolStripMenuItem7_Click(object sender, EventArgs e)
+        {
+            FormBoniXVendas form = new FormBoniXVendas(TipoCalculo.calculo_70_30);
 
             ((System.Windows.Forms.ToolStripMenuItem)sender).Enabled = false;
 

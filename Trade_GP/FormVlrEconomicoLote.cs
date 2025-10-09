@@ -37,13 +37,21 @@ namespace Trade_GP
         private List<ContadorModel> contadores = new List<ContadorModel>();
         public ToolStripMenuItem menu { get; internal set; }
 
-        public FormVlrEconomicoLotes()
+        private Boolean Troca_Valor = false;
+
+        public FormVlrEconomicoLotes(Boolean troca_valor = false)
         {
+            Troca_Valor = troca_valor;
             InitializeComponent();
         }
 
         private void FormVlrEconomicoLotes_Load(object sender, EventArgs e)
         {
+            
+            if (Troca_Valor)
+            {
+                lblTitulo.Text = "Cálculo Do Valor Ecômico Por Lote - PAUTA INVERTIDA";
+            }
             btProximoFlag = false;
 
             recomeco();
@@ -473,7 +481,15 @@ namespace Trade_GP
                 {
                     if (cbTipoProcessamento.SelectedIndex == 0)
                     {
-                        _saida = await daoDet.Vlr_Economico_V3(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, anoSelic, mesSeleic);
+                       if (Troca_Valor)
+                        {
+                            _saida = await daoDet.vlr_enconomico_v3_troca(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, anoSelic, mesSeleic);
+                        }
+                        else
+                        {
+                            // _saida = await daoDet.Vlr_Economico_V3(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, anoSelic, mesSeleic,Troca_Valor);
+                        }
+
                     }
                 }
                 catch (Exception ex)
@@ -693,10 +709,22 @@ namespace Trade_GP
 
             LoadDbGridLocais();
 
-            await LoadEscopo();
+            int total = await LoadEscopo();
 
-            status_pre_processamento();
+            if (total > 0)
+            {
+                status_pre_processamento();
 
+            } else
+            {
+                MessageBox.Show("Nada Para Processar !");
+
+                btProximoFlag = false;
+
+                recomeco();
+
+                status_inicial();
+            }
         }
 
         private async Task<int> LoadEscopo()
@@ -722,7 +750,7 @@ namespace Trade_GP
 
                 periodos = string.Join("','", Parametros[0].Periodos.Select(p => p.Data));
 
-                contadores = await dao.Conta_Nfe_ValoresByDay(1, Parametros[0].Cod_Emp, locais, periodos);
+                contadores = await dao.Conta_Nfe_ValoresByDay(1, Parametros[0].Cod_Emp, locais, periodos,Troca_Valor);
 
             }
             finally
@@ -731,7 +759,6 @@ namespace Trade_GP
 
                 formAviso.Close();
             }
-
 
             return contadores.Count();
 

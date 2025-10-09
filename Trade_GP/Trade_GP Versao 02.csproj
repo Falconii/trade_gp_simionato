@@ -310,6 +310,7 @@
       <DependentUpon>FormValorizaçãoIpi.cs</DependentUpon>
     </Compile>
     <Compile Include="Ipi\Util\ImportacaoAsyncIPI.cs" />
+    <Compile Include="Ipi\Util\TipoCalculo.cs" />
     <Compile Include="manutencao.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -477,10 +478,13 @@
   <ItemGroup>
     <Content Include="Ipi\Scripts\Banco\Banco De Dados.sql" />
     <Content Include="Ipi\Scripts\Banco\tabelas.sql" />
+    <Content Include="Ipi\Scripts\preparar calculo 70 x 30 .sql" />
     <Content Include="Ipi\Scripts\preparar nota para simular na nota.sql" />
+    <Content Include="Ipi\Scripts\rotinas para calculor qtd ipi - 70x30 .sql" />
     <Content Include="Ipi\Scripts\rotinas para calculor qtd ipi.sql" />
     <Content Include="Ipi\Scripts\teste calculo ipi economico.sql" />
     <Content Include="Ipi\Scripts\teste calculo qtd ipi.sql" />
+    <Content Include="Ipi\Scripts\Triggers e Funcoes IPI 70x30 .sql" />
     <Content Include="Ipi\Scripts\Triggers e Funcoes IPI.sql" />
     <Content Include="Ipi\Scripts\vlr_enconomico_ipi.sql" />
     <Content Include="Script\Apoio2\Acumulado CFOP.sql" />

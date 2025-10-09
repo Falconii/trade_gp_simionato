@@ -7,8 +7,7 @@ namespace Trade_GP
 {
     static class Program
     {
-     
-            /// <summary>
+             /// <summary>
             /// Ponto de entrada principal para o aplicativo.
             /// </summary>
             [STAThread]

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Trade_GP.Dao.postgre;
 using Trade_GP.Extensoes;
+using Trade_GP.Ipi.Util;
 using Trade_GP.Models;
 using Trade_GP.Util;
 
@@ -29,10 +30,6 @@ namespace Trade_GP.Ipi.Forms
 
         private Boolean btProximoFlag = false;
 
-        private string Cod_Emp = "";
-
-        private string Local = "";
-
         private Boolean Cancelar = false;
 
         List<ContadorModel> contadores = new List<ContadorModel>();
@@ -43,15 +40,21 @@ namespace Trade_GP.Ipi.Forms
 
         int _mes_selic = 0;
 
+        TipoCalculo tipoCalculo = TipoCalculo.calculo_60_40;
+
+
         public ToolStripMenuItem menu { get; internal set; }
 
-        public FormBoniXVendas()
+        public FormBoniXVendas(TipoCalculo tipoCalculo  = TipoCalculo.calculo_60_40)
         {
+            this.tipoCalculo = tipoCalculo;
             InitializeComponent();
         }
 
         private void FormBoniXVendas_Load(object sender, EventArgs e)
         {
+
+            lblTitulo.Text = tipoCalculo == TipoCalculo.calculo_60_40 ? "Notas Bonificação X Vendas 60 x 40" : "Notas Bonificação X Vendas 70 x 30";
 
             getParVendas();
 
@@ -91,10 +94,6 @@ namespace Trade_GP.Ipi.Forms
             lsValidacoes = new List<validacao>();
 
             btProximoFlag = false;
-
-            Cod_Emp = "";
-
-            Local = "";
 
             Cancelar = false;
 
@@ -419,7 +418,7 @@ namespace Trade_GP.Ipi.Forms
 
                 periodos = string.Join("','", Parametros[0].Periodos.Select(p => p.Data));
 
-                contadores = await dao.Conta_Nfe_Saida_BoniByDayIPI(1, Parametros[0].Cod_Emp, locais, periodos);
+                contadores = await dao.Conta_Nfe_Saida_BoniByDayIPI(1, Parametros[0].Cod_Emp, locais, periodos,tipoCalculo);
 
             }
             finally
@@ -836,14 +835,14 @@ namespace Trade_GP.Ipi.Forms
                 try
                 {
 
-                    _saida_nota = await daoDet.bonixvenda_nota(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, _ano_selic, _mes_selic);
+                    _saida_nota = await daoDet.bonixvenda_nota(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, _ano_selic, _mes_selic,tipoCalculo);
 
                     await Task.Run(async delegate
                     {
                         await Task.Delay(200);
                     });
 
-                    _saida_periodo      = await daoDet.bonixvenda_periodo(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, _ano_selic, _mes_selic, _filtro_cnpj);
+                    _saida_periodo      = await daoDet.bonixvenda_periodo(UsuarioSistema.Id_Grupo, cod_emp, local, Periodo, _ano_selic, _mes_selic, _filtro_cnpj, tipoCalculo);
 
                     _saida_total_dia    = _saida_nota + _saida_periodo;
 

@@ -1,20 +1,5 @@
+-- DROP FUNCTION public.vlr_enconomico_ipi(in int4, in text, in text, in text, in int4, in int4, out int4);
 
-DROP TYPE IF EXISTS VALORRECORD;
-CREATE TYPE VALORRECORD AS 
-(
-    
-    bon_id_grupo  INT4,
-    bon_id_planilha INT4,
-    bon_nro_linha INT4,
-    bon_dt_ref date,
-    bon_quantidade_1  numeric(15,4),
-    bon_ipi_vlr  numeric(15,4),
-    con_qtd_e     numeric(15,2),       
-    ven_id_grupo  INT4,
-    ven_id_planilha INT4,
-    ven_nro_linha INT4
-);
-go
 CREATE OR REPLACE FUNCTION public.vlr_enconomico_ipi(_grupo integer, _cod_emp text, _local text, _dia_mes_ano text, _ano_selic integer, _mes_selic integer, OUT _saida integer)
  RETURNS integer
  LANGUAGE plpgsql
@@ -133,9 +118,3 @@ AS $function$
     END;
     $function$
 ;
-go
-
-
-
-
-

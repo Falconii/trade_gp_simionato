@@ -262,7 +262,7 @@ namespace Trade_GP
 
                 periodos = string.Join("','", Parametros[0].Periodos.Select(p => p.Data));
 
-                contadores = await dao.Conta_Nfe_ValoresByDay(1, Parametros[0].Cod_Emp, locais, periodos);
+                contadores = await dao.Conta_Nfe_ValoresByDay(1, Parametros[0].Cod_Emp, locais, periodos,false);
 
             }
             finally

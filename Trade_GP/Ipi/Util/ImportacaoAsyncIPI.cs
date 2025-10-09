@@ -374,7 +374,7 @@ namespace Trade_GP.Ipi.Util
                 Det.Qtd_Convertida = 0;
                 Det.Fator = 1;
                 Det.Radical_Cnpj = Det.Cnpj_Cpf.Substring(0, 8);
-                Det.Compl_Cfop = fields[12].Substring(4, 2);
+                Det.Compl_Cfop = fields[12].Trim().Length < 6 ? "00" :  fields[12].Substring(4, 2);
 
                 bebida = "N";
 
@@ -855,7 +855,7 @@ namespace Trade_GP.Ipi.Util
         {
             bool retorno = false;
 
-            if (cfop.Trim().Length < 6)
+            if (cfop.Trim().Length < 4)
             {
                 return retorno;
             }
